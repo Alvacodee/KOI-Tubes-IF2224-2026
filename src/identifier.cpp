@@ -1,4 +1,4 @@
-#include "Identifier.hpp"
+#include "identifier.hpp"
 
 bool isIdentChar(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');

@@ -1,4 +1,4 @@
-#include "Operator.hpp"
+#include "operator.hpp"
 
 bool isOperatorChar(char c){
     if (c == '+' || c == '-' || c == '*' || c == '/' ||
