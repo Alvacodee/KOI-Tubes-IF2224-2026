@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 
-// Semua jenis token yang dikenali oleh lexer Arion
 enum class TokenType {
     // Literal
     INTCON, REALCON, CHARCON, STRING_TOK,
