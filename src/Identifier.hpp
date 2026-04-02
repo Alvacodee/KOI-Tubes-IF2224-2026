@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "token.h"
+#include "token.hpp"
 
 // Mengecek apakah karakter c boleh jadi bagian dari identifier (huruf atau digit)
 bool isIdentChar(char c);
