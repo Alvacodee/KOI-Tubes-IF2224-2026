@@ -38,7 +38,7 @@ Token handleStringOrChar(std::istream& inputFile, int currentLine) {
         if (nextChar == '\'') {
             break;
         }
-    }.
+    }
     TokenType type = (value.length() == 3) ? TokenType::CHARCON : TokenType::STRING_TOK;
     return Token(type, value, currentLine);
 }
