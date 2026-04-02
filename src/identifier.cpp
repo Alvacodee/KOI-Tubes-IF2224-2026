@@ -9,11 +9,9 @@ TokenType classifyIdent(const std::string& w) {
     if (w == "and")       return TokenType::ANDSY;
     if (w == "or")        return TokenType::ORSY;
 
-    // Arithmetic operators
     if (w == "div")       return TokenType::IDIV;
     if (w == "mod")       return TokenType::IMOD;
 
-    // Declaration keywords
     if (w == "const")     return TokenType::CONSTSY;
     if (w == "type")      return TokenType::TYPESY;
     if (w == "var")       return TokenType::VARSY;
@@ -23,7 +21,6 @@ TokenType classifyIdent(const std::string& w) {
     if (w == "record")    return TokenType::RECORDSY;
     if (w == "program")   return TokenType::PROGRAMSY;
 
-    // Control flow keywords
     if (w == "begin")     return TokenType::BEGINSY;
     if (w == "end")       return TokenType::ENDSY;
     if (w == "if")        return TokenType::IFSY;

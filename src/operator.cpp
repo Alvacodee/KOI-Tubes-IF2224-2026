@@ -12,22 +12,19 @@ bool isOperatorChar(char c){
 }
 
 TokenType classifyOperator(const std::string& op){
-    // Operator Aritmatika
     if (op == "+") return TokenType::PLUS;
     if (op == "-") return TokenType::MINUS;
     if (op == "*") return TokenType::TIMES;
     if (op == "/") return TokenType::RDIV;
 
-    // Operator Relasional & Assignment
     if (op == "==" || op == "=") return TokenType::EQL; 
     if (op == "<>") return TokenType::NEQ;
     if (op == ">") return TokenType::GTR;
     if (op == ">=") return TokenType::GEQ;
     if (op == "<") return TokenType::LSS;
     if (op == "<=") return TokenType::LEQ;
-    if (op == ":=") return TokenType::BECOMES; // Assignment di bahasa ala Pascal
+    if (op == ":=") return TokenType::BECOMES; 
 
-    // Tanda Baca 
     if (op == "(") return TokenType::LPARENT;
     if (op == ")") return TokenType::RPARENT;
     if (op == "[") return TokenType::LBRACK;

@@ -66,7 +66,6 @@ std::string tokenTypeName(TokenType type) {
     }
 }
 
-// Token yang perlu mencetak value-nya: literal, identifier, komentar, dan error
 bool tokenHasValue(TokenType type) {
     switch (type) {
         case TokenType::INTCON:

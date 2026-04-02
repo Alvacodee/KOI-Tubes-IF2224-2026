@@ -14,7 +14,7 @@ enum class TokenType {
     // Operator perbandingan
     EQL, NEQ, GTR, GEQ, LSS, LEQ,
 
-    // Tanda baca dan delimiter
+    // Tanda baca 
     LPARENT, RPARENT, LBRACK, RBRACK,
     COMMA, SEMICOLON, PERIOD, COLON, BECOMES,
 
@@ -27,7 +27,7 @@ enum class TokenType {
     CASESY, OFSY, WHILESY, DOSY,
     FORSY, TOSY, DOWNTOSY, REPEATSY, UNTILSY,
 
-    // Identifier (nama variabel, fungsi, prosedur, tipe, dll)
+    // Identifier 
     IDENT,
 
     // Komentar
@@ -39,15 +39,13 @@ enum class TokenType {
 
 struct Token {
     TokenType   type;
-    std::string value;  // diisi untuk IDENT, literal, COMMENT, ERROR_TOK
+    std::string value; 
     int         line;
 
     Token(TokenType t, std::string v, int l) : type(t), value(std::move(v)), line(l) {}
     Token(TokenType t, int l)               : type(t), value(""), line(l) {}
 };
 
-// Mengubah TokenType menjadi string untuk keperluan output
 std::string tokenTypeName(TokenType type);
 
-// Mengecek apakah token perlu mencetak value-nya di output
 bool tokenHasValue(TokenType type);
