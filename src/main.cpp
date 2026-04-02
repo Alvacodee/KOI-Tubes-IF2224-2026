@@ -1,8 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <iostream>
-#include <string>
 #include "token.hpp"
 #include "literal.hpp"
 #include "identifier.hpp"
@@ -22,8 +20,36 @@ int main() {
         return 1;
     }
 
-    cout << "Berhasil membuka file: " << filename << endl;
-    cout << "--- Memulai proses baca karakter ---" << endl << endl;
+    string outFilename = filename;
+    size_t dotPos = outFilename.find_last_of('.');
+    if (dotPos != string::npos) {
+        outFilename = outFilename.substr(0, dotPos) + "_solusi" + outFilename.substr(dotPos);
+    } else {
+        outFilename += "_solusi.txt";
+    }
+
+    ofstream outputFile(outFilename);
+    if (!outputFile.is_open()) {
+        cerr << "Error: Tidak dapat membuat file solusi " << outFilename << endl;
+        return 1;
+    }
+
+    cout << "\nBerhasil membuka file: " << filename << endl;
+
+    cout << "--- Isi File Input ---" << endl;
+    outputFile << "--- Isi File Input ---" << endl;
+    
+    string line;
+    while (getline(inputFile, line)) {
+        cout << line << endl;
+        outputFile << line << endl;
+    }
+
+    inputFile.clear();
+    inputFile.seekg(0);
+
+    cout << "\n--- Memulai proses baca karakter ---" << endl;
+    outputFile << "\n--- Hasil Lexical Analysis ---" << endl;
 
     Lexer lexer(inputFile);
 
@@ -36,13 +62,18 @@ int main() {
 
         if (tokenHasValue(t.type)) {
             cout << tokenTypeName(t.type) << " (" << t.value << ")" << endl;
+            outputFile << tokenTypeName(t.type) << " (" << t.value << ")" << endl;
         } else {
             cout << tokenTypeName(t.type) << endl;
+            outputFile << tokenTypeName(t.type) << endl;
         }
     }
 
     cout << "\n--- Selesai ---" << endl;
+    cout << "Output berhasil disimpan di: " << outFilename << endl;
 
     inputFile.close();
+    outputFile.close();
+    
     return 0;
 }
