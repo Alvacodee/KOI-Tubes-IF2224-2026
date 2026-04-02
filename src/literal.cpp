@@ -11,6 +11,7 @@ Token handleNumber(std::istream& inputFile, char firstChar, int currentLine) {
     while (inputFile.get(nextChar)) {
         if (isdigit(nextChar)) {
             value += nextChar;
+        } else if (nextChar == '.') {
             char afterDot = inputFile.peek();
             if (isdigit(afterDot)) {
                 isReal = true;
