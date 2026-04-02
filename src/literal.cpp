@@ -1,4 +1,4 @@
-#include "Literal.hpp"
+#include "literal.hpp"
 
 Token handleNumber(std::istream& inputFile, char firstChar, int currentLine) {
     std::string value = "";
