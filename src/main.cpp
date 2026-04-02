@@ -1,16 +1,21 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <iostream>
+#include <string>
+#include "token.hpp"
+#include "literal.hpp"
+#include "identifier.hpp"
+#include "operator.hpp"
+#include "lexer.hpp"
 
 using namespace std;
 
-int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        cerr << "Cara menggunakan: ./arion <input.txt>" << endl;
-        return 1;
-    }
+int main() {
+    cout << "Masukkan alamat file.txt: ";
+    string filename;
+    cin >> filename;
 
-    string filename = argv[1];
     ifstream inputFile(filename);
     if (!inputFile.is_open()) {
         cerr << "Error: Tidak dapat membuka file " << filename << endl;
@@ -18,11 +23,22 @@ int main(int argc, char* argv[]) {
     }
 
     cout << "Berhasil membuka file: " << filename << endl;
-    cout << "--- Memulai proses baca karakter ---" << endl;
+    cout << "--- Memulai proses baca karakter ---" << endl << endl;
 
-    char currentChar;
-    while (inputFile.get(currentChar)) {
-        cout << currentChar; 
+    Lexer lexer(inputFile);
+
+    while (true) {
+        Token t = lexer.getNextToken();
+
+        if (t.type == TokenType::ERROR_TOK && t.value == "EOF") {
+            break;
+        }
+
+        if (tokenHasValue(t.type)) {
+            cout << tokenTypeName(t.type) << " (" << t.value << ")" << endl;
+        } else {
+            cout << tokenTypeName(t.type) << endl;
+        }
     }
 
     cout << "\n--- Selesai ---" << endl;
