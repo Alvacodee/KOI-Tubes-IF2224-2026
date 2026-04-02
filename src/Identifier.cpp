@@ -1,17 +1,12 @@
-#include "Identifier.h"
+#include "Identifier.hpp"
 #include <cctype>
 
-// Identifier di Arion: diawali huruf, diikuti huruf/angka bebas, case-insensitive.
-// Contoh valid: x, PI, MyInt, h4g, identIniSangatPanjang24tetapiTetapValid
 
 bool isIdentChar(char c) {
     return isalpha(static_cast<unsigned char>(c)) || isdigit(static_cast<unsigned char>(c));
 }
 
-// Semua perbandingan dilakukan dalam lowercase karena Arion bersifat case-insensitive.
-// Caller wajib melowercasekan buffer sebelum memanggil fungsi ini.
 TokenType classifyIdent(const std::string& w) {
-    // Logical operators
     if (w == "not")       return TokenType::NOTSY;
     if (w == "and")       return TokenType::ANDSY;
     if (w == "or")        return TokenType::ORSY;
