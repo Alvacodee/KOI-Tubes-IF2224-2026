@@ -1,5 +1,4 @@
 #include "Literal.hpp"
-#include <cctype>
 
 Token handleNumber(std::istream& inputFile, char firstChar, int currentLine) {
     std::string value = "";
@@ -9,11 +8,11 @@ Token handleNumber(std::istream& inputFile, char firstChar, int currentLine) {
     bool isReal = false;
 
     while (inputFile.get(nextChar)) {
-        if (isdigit(nextChar)) {
+        if (nextChar >= '0' && nextChar <= '9') {
             value += nextChar;
         } else if (nextChar == '.') {
             char afterDot = inputFile.peek();
-            if (isdigit(afterDot)) {
+            if (afterDot >= '0' && afterDot <= '9') {
                 isReal = true;
                 value += nextChar; 
             } else {

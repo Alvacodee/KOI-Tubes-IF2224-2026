@@ -1,9 +1,7 @@
 #include "Identifier.hpp"
-#include <cctype>
-
 
 bool isIdentChar(char c) {
-    return isalpha(static_cast<unsigned char>(c)) || isdigit(static_cast<unsigned char>(c));
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
 }
 
 TokenType classifyIdent(const std::string& w) {
