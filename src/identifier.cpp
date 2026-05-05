@@ -1,40 +1,47 @@
 #include "identifier.hpp"
+#include <cctype>
+#include <algorithm>
 
 bool isIdentChar(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
 }
 
+// Arion bersifat case-insensitive — lowercase dulu sebelum dibandingkan keyword
 TokenType classifyIdent(const std::string& w) {
-    if (w == "not")       return TokenType::NOTSY;
-    if (w == "and")       return TokenType::ANDSY;
-    if (w == "or")        return TokenType::ORSY;
+    std::string lower = w;
+    std::transform(lower.begin(), lower.end(), lower.begin(),
+                   [](unsigned char c){ return std::tolower(c); });
 
-    if (w == "div")       return TokenType::IDIV;
-    if (w == "mod")       return TokenType::IMOD;
+    if (lower == "not")       return TokenType::NOTSY;
+    if (lower == "and")       return TokenType::ANDSY;
+    if (lower == "or")        return TokenType::ORSY;
 
-    if (w == "const")     return TokenType::CONSTSY;
-    if (w == "type")      return TokenType::TYPESY;
-    if (w == "var")       return TokenType::VARSY;
-    if (w == "function")  return TokenType::FUNCTIONSY;
-    if (w == "procedure") return TokenType::PROCEDURESY;
-    if (w == "array")     return TokenType::ARRAYSY;
-    if (w == "record")    return TokenType::RECORDSY;
-    if (w == "program")   return TokenType::PROGRAMSY;
+    if (lower == "div")       return TokenType::IDIV;
+    if (lower == "mod")       return TokenType::IMOD;
 
-    if (w == "begin")     return TokenType::BEGINSY;
-    if (w == "end")       return TokenType::ENDSY;
-    if (w == "if")        return TokenType::IFSY;
-    if (w == "then")      return TokenType::THENSY;
-    if (w == "else")      return TokenType::ELSESY;
-    if (w == "case")      return TokenType::CASESY;
-    if (w == "of")        return TokenType::OFSY;
-    if (w == "while")     return TokenType::WHILESY;
-    if (w == "do")        return TokenType::DOSY;
-    if (w == "for")       return TokenType::FORSY;
-    if (w == "to")        return TokenType::TOSY;
-    if (w == "downto")    return TokenType::DOWNTOSY;
-    if (w == "repeat")    return TokenType::REPEATSY;
-    if (w == "until")     return TokenType::UNTILSY;
+    if (lower == "const")     return TokenType::CONSTSY;
+    if (lower == "type")      return TokenType::TYPESY;
+    if (lower == "var")       return TokenType::VARSY;
+    if (lower == "function")  return TokenType::FUNCTIONSY;
+    if (lower == "procedure") return TokenType::PROCEDURESY;
+    if (lower == "array")     return TokenType::ARRAYSY;
+    if (lower == "record")    return TokenType::RECORDSY;
+    if (lower == "program")   return TokenType::PROGRAMSY;
+
+    if (lower == "begin")     return TokenType::BEGINSY;
+    if (lower == "end")       return TokenType::ENDSY;
+    if (lower == "if")        return TokenType::IFSY;
+    if (lower == "then")      return TokenType::THENSY;
+    if (lower == "else")      return TokenType::ELSESY;
+    if (lower == "case")      return TokenType::CASESY;
+    if (lower == "of")        return TokenType::OFSY;
+    if (lower == "while")     return TokenType::WHILESY;
+    if (lower == "do")        return TokenType::DOSY;
+    if (lower == "for")       return TokenType::FORSY;
+    if (lower == "to")        return TokenType::TOSY;
+    if (lower == "downto")    return TokenType::DOWNTOSY;
+    if (lower == "repeat")    return TokenType::REPEATSY;
+    if (lower == "until")     return TokenType::UNTILSY;
 
     return TokenType::IDENT;
 }
