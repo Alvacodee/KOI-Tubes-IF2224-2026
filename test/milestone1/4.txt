@@ -1,0 +1,3 @@
+array[1..10]of integer;
+procedure(a,b:char);
+begin(x);end.

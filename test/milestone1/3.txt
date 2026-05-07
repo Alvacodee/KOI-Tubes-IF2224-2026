@@ -1,0 +1,7 @@
+PROGRAM MyTest;
+VAR
+  X: INTEGER;
+BEGIN
+  If X > 0 Then
+    X := X DIV 2;
+END.

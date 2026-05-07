@@ -1,0 +1,20 @@
+--- Isi File Input ---
+const
+  Initial = 'A';
+  Message = 'Ini testcase';
+  Empty = '';
+
+--- Hasil Lexical Analysis ---
+constsy
+ident (Initial)
+eql
+charcon ('A')
+semicolon
+ident (Message)
+eql
+string ('Ini testcase')
+semicolon
+ident (Empty)
+eql
+string ('')
+semicolon

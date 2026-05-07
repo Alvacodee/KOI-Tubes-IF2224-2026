@@ -61,8 +61,8 @@ int main() {
         }
 
         if (tokenHasValue(t.type)) {
-            cout << tokenTypeName(t.type) << " (" << t.value << ")" << endl;
-            outputFile << tokenTypeName(t.type) << " (" << t.value << ")" << endl;
+            cout << tokenTypeName(t.type) << "(" << t.value << ")" << endl;
+            outputFile << tokenTypeName(t.type) << "(" << t.value << ")" << endl;
         } else {
             cout << tokenTypeName(t.type) << endl;
             outputFile << tokenTypeName(t.type) << endl;

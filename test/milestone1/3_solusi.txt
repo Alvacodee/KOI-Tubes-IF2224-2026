@@ -1,0 +1,32 @@
+--- Isi File Input ---
+PROGRAM MyTest;
+VAR
+  X: INTEGER;
+BEGIN
+  If X > 0 Then
+    X := X DIV 2;
+END.
+
+--- Hasil Lexical Analysis ---
+programsy
+ident (MyTest)
+semicolon
+varsy
+ident (X)
+colon
+ident (INTEGER)
+semicolon
+beginsy
+ifsy
+ident (X)
+gtr
+intcon (0)
+thensy
+ident (X)
+becomes
+ident (X)
+idiv
+intcon (2)
+semicolon
+endsy
+period
