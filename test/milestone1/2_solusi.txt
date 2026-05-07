@@ -1,0 +1,31 @@
+--- Isi File Input ---
+a := 10;
+if a <> 5 then
+  b <= 20;
+if a >= 15 then
+  c == 30;
+
+--- Hasil Lexical Analysis ---
+ident (a)
+becomes
+intcon (10)
+semicolon
+ifsy
+ident (a)
+neq
+intcon (5)
+thensy
+ident (b)
+leq
+intcon (20)
+semicolon
+ifsy
+ident (a)
+geq
+intcon (15)
+thensy
+ident (c)
+eql
+eql
+intcon (30)
+semicolon

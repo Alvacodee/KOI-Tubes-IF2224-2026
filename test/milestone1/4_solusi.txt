@@ -1,0 +1,31 @@
+--- Isi File Input ---
+array[1..10]of integer;
+procedure(a,b:char);
+begin(x);end.
+
+--- Hasil Lexical Analysis ---
+arraysy
+lbrack
+intcon (1.)
+period
+intcon (10)
+rbrack
+ofsy
+ident (integer)
+semicolon
+proceduresy
+lparent
+ident (a)
+comma
+ident (b)
+colon
+ident (char)
+rparent
+semicolon
+beginsy
+lparent
+ident (x)
+rparent
+semicolon
+endsy
+period

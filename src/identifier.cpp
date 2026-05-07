@@ -6,7 +6,11 @@ bool isIdentChar(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
 }
 
+<<<<<<< HEAD
 // Arion bersifat case-insensitive — lowercase dulu sebelum dibandingkan keyword
+=======
+// fix case sensitive problem
+>>>>>>> 542f638e28e03e5d007ff24ad92b7087216241e8
 TokenType classifyIdent(const std::string& w) {
     std::string lower = w;
     std::transform(lower.begin(), lower.end(), lower.begin(),

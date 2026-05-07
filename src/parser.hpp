@@ -3,6 +3,7 @@
 #include <string>
 #include <stdexcept>
 #include "token.hpp"
+<<<<<<< HEAD
 #include "node.hpp"
 
 // SyntaxError: dilempar saat parser menemukan token yang tidak sesuai grammar
@@ -15,10 +16,25 @@ struct SyntaxError : public std::runtime_error {
 // Parser mengimplementasikan Recursive Descent untuk grammar bahasa Arion.
 // setiap non-terminal dalam grammar punya fungsi parse sendiri.
 // input: list of tokens dari lexer. output: parse tree (shared_ptr<ParseNode>).
+=======
+#include "parse_tree_node.hpp"
+
+class SyntaxError : public std::runtime_error {
+public:
+    int line;
+    int col;
+    std::string found;
+    std::string expected;
+
+    SyntaxError(int line, int col, const std::string& found, const std::string& expected);
+};
+
+>>>>>>> 542f638e28e03e5d007ff24ad92b7087216241e8
 class Parser {
 public:
     explicit Parser(const std::vector<Token>& tokens);
 
+<<<<<<< HEAD
     // entry point — parse seluruh program dan return root node
     std::shared_ptr<ParseNode> parse();
 
@@ -86,4 +102,41 @@ private:
     // std::shared_ptr<ParseNode> parseWhileStatement();
     // std::shared_ptr<ParseNode> parseRepeatStatement();
     // std::shared_ptr<ParseNode> parseForStatement();
+=======
+    ParseTreeNode* parse();
+
+private:
+    std::vector<Token> tokens;
+    int currentIndex;
+
+    Token peek() const;
+    Token advance();
+    bool isAtEnd() const;
+
+    ParseTreeNode* match(TokenType expectedType);
+
+    ParseTreeNode* parseProgram();
+    ParseTreeNode* parseProgramHeader();
+    ParseTreeNode* parseBlock();
+    ParseTreeNode* parseDeclarationPart();
+    ParseTreeNode* parseCompoundStatement();
+
+    ParseTreeNode* parseConstant();
+    ParseTreeNode* parseConstDeclaration();
+    ParseTreeNode* parseTypeDeclaration();
+    ParseTreeNode* parseVarDeclaration();
+    ParseTreeNode* parseIdentifierList();
+    ParseTreeNode* parseType();
+    ParseTreeNode* parseArrayType();
+    ParseTreeNode* parseRange();
+    ParseTreeNode* parseEnumerated();
+    ParseTreeNode* parseRecordType();
+    ParseTreeNode* parseFieldList();
+    ParseTreeNode* parseFieldPart();
+    ParseTreeNode* parseSubprogramDeclaration();
+    ParseTreeNode* parseProcedureDeclaration();
+    ParseTreeNode* parseFunctionDeclaration();
+    ParseTreeNode* parseFormalParameterList();
+    ParseTreeNode* parseParameterGroup();
+>>>>>>> 542f638e28e03e5d007ff24ad92b7087216241e8
 };

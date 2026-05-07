@@ -34,16 +34,22 @@ enum class TokenType {
     COMMENT,
 
     // Token tidak dikenal
-    ERROR_TOK
+    ERROR_TOK,
+
+    // End of file
+    EOF_TOK
 };
 
 struct Token {
     TokenType   type;
     std::string value; 
     int         line;
+    int         col;
 
-    Token(TokenType t, std::string v, int l) : type(t), value(std::move(v)), line(l) {}
-    Token(TokenType t, int l)               : type(t), value(""), line(l) {}
+    Token(TokenType t, std::string v, int l, int c = 0)
+        : type(t), value(std::move(v)), line(l), col(c) {}
+    Token(TokenType t, int l, int c = 0)
+        : type(t), value(""), line(l), col(c) {}
 };
 
 std::string tokenTypeName(TokenType type);

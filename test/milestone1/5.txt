@@ -1,0 +1,4 @@
+const
+  Initial = 'A';
+  Message = 'Ini testcase';
+  Empty = '';
