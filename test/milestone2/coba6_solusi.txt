@@ -1,0 +1,31 @@
+--- Isi File Input ---
+program Panggil;
+begin
+    write('Halo');
+    read(x);
+    x := abs(-5)
+end.
+
+--- Hasil Lexical Analysis ---
+programsy
+ident(Panggil)
+semicolon
+beginsy
+ident(write)
+lparent
+string('Halo')
+rparent
+semicolon
+ident(read)
+lparent
+ident(x)
+rparent
+semicolon
+ident(x)
+becomes
+ident(abs)
+lparent
+intcon(-5)
+rparent
+endsy
+period

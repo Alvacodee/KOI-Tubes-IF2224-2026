@@ -1,0 +1,42 @@
+--- Isi File Input ---
+program Hitung;
+var a, b, c: integer;
+begin
+    a := 10;
+    b := a + 2 * 3;
+    c := b div a
+end.
+
+--- Hasil Lexical Analysis ---
+programsy
+ident(Hitung)
+semicolon
+varsy
+ident(a)
+comma
+ident(b)
+comma
+ident(c)
+colon
+ident(integer)
+semicolon
+beginsy
+ident(a)
+becomes
+intcon(10)
+semicolon
+ident(b)
+becomes
+ident(a)
+plus
+intcon(2)
+times
+intcon(3)
+semicolon
+ident(c)
+becomes
+ident(b)
+idiv
+ident(a)
+endsy
+period

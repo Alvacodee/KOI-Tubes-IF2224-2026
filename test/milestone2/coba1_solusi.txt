@@ -1,0 +1,12 @@
+--- Isi File Input ---
+program Kosong;
+begin
+end.
+
+--- Hasil Lexical Analysis ---
+programsy
+ident(Kosong)
+semicolon
+beginsy
+endsy
+period

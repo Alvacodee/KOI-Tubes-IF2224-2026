@@ -1,0 +1,41 @@
+--- Isi File Input ---
+program Cek;
+var x: integer;
+begin
+    x := 5;
+    if x > 0 then
+        x := x - 1
+    else
+        x := 0
+end.
+
+--- Hasil Lexical Analysis ---
+programsy
+ident(Cek)
+semicolon
+varsy
+ident(x)
+colon
+ident(integer)
+semicolon
+beginsy
+ident(x)
+becomes
+intcon(5)
+semicolon
+ifsy
+ident(x)
+gtr
+intcon(0)
+thensy
+ident(x)
+becomes
+ident(x)
+minus
+intcon(1)
+elsesy
+ident(x)
+becomes
+intcon(0)
+endsy
+period

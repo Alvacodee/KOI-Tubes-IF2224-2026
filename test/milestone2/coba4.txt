@@ -1,0 +1,9 @@
+program Pilih;
+var i: integer;
+begin
+    i := 2;
+    case i of
+        0: i := 100;
+        1, 2: i := 200
+    end
+end.

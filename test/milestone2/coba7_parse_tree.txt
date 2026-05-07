@@ -1,0 +1,92 @@
+<program>
+├── <program-header>
+│   ├── programsy(program)
+│   ├── ident(Ekspresi)
+│   └── semicolon(;)
+├── <block>
+│   ├── <declaration-part>
+│   │   └── <var-declaration>
+│   │       ├── varsy(var)
+│   │       ├── <identifier-list>
+│   │       │   ├── ident(a)
+│   │       │   ├── comma(,)
+│   │       │   └── ident(b)
+│   │       ├── colon(:)
+│   │       ├── <type>
+│   │       │   └── ident(real)
+│   │       └── semicolon(;)
+│   └── <compound-statement>
+│       ├── beginsy(begin)
+│       ├── <statement-list>
+│       │   ├── <assignment-statement>
+│       │   │   ├── <variable>
+│       │   │   │   └── ident(a)
+│       │   │   ├── becomes(:=)
+│       │   │   └── <expression>
+│       │   │       └── <simple-expression>
+│       │   │           └── <term>
+│       │   │               └── <factor>
+│       │   │                   └── realcon(1.5)
+│       │   ├── semicolon(;)
+│       │   └── <assignment-statement>
+│       │       ├── <variable>
+│       │       │   └── ident(b)
+│       │       ├── becomes(:=)
+│       │       └── <expression>
+│       │           └── <simple-expression>
+│       │               └── <term>
+│       │                   ├── <factor>
+│       │                   │   ├── lparent(()
+│       │                   │   ├── <expression>
+│       │                   │   │   └── <simple-expression>
+│       │                   │   │       ├── <term>
+│       │                   │   │       │   └── <factor>
+│       │                   │   │       │       └── <variable>
+│       │                   │   │       │           └── ident(a)
+│       │                   │   │       ├── <additive-operator>
+│       │                   │   │       │   └── plus(+)
+│       │                   │   │       └── <term>
+│       │                   │   │           └── <factor>
+│       │                   │   │               └── realcon(3.0)
+│       │                   │   └── rparent())
+│       │                   ├── <multiplicative-operator>
+│       │                   │   └── times(*)
+│       │                   ├── <factor>
+│       │                   │   └── realcon(2.0)
+│       │                   ├── <multiplicative-operator>
+│       │                   │   └── rdiv(/)
+│       │                   ├── <factor>
+│       │                   │   ├── lparent(()
+│       │                   │   ├── <expression>
+│       │                   │   │   └── <simple-expression>
+│       │                   │   │       ├── <term>
+│       │                   │   │       │   └── <factor>
+│       │                   │   │       │       └── <variable>
+│       │                   │   │       │           └── ident(a)
+│       │                   │   │       ├── <additive-operator>
+│       │                   │   │       │   └── minus(-)
+│       │                   │   │       └── <term>
+│       │                   │   │           └── <factor>
+│       │                   │   │               └── realcon(0.5)
+│       │                   │   └── rparent())
+│       │                   ├── <multiplicative-operator>
+│       │                   │   └── andsy(and)
+│       │                   └── <factor>
+│       │                       ├── notsy(not)
+│       │                       └── <factor>
+│       │                           ├── lparent(()
+│       │                           ├── <expression>
+│       │                           │   ├── <simple-expression>
+│       │                           │   │   └── <term>
+│       │                           │   │       └── <factor>
+│       │                           │   │           └── <variable>
+│       │                           │   │               └── ident(a)
+│       │                           │   ├── <relational-operator>
+│       │                           │   │   └── eql(=)
+│       │                           │   └── <simple-expression>
+│       │                           │       └── <term>
+│       │                           │           └── <factor>
+│       │                           │               └── realcon(0.0)
+│       │                           └── rparent())
+│       └── endsy(end)
+└── period(.)

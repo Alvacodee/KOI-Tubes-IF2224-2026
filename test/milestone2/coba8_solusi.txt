@@ -1,0 +1,16 @@
+--- Isi File Input ---
+program Salah;
+begin
+    x := 5
+end.
+
+--- Hasil Lexical Analysis ---
+programsy
+ident(Salah)
+semicolon
+beginsy
+ident(x)
+becomes
+intcon(5)
+endsy
+period

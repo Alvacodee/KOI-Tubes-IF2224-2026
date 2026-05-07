@@ -80,13 +80,23 @@ ParseTreeNode* Parser::parseCompoundStatement() {
 
 ParseTreeNode* Parser::parseStatementList() {
     ParseTreeNode* node = new ParseTreeNode("<statement-list>");
+
+    if (peek().type == TokenType::ENDSY || peek().type == TokenType::UNTILSY) {
+        return node;   // tanpa anak
+    }
+
     node->addChild(parseStatement());
+
     while (peek().type == TokenType::SEMICOLON) {
         node->addChild(match(TokenType::SEMICOLON));
-        if (peek().type != TokenType::ENDSY && peek().type != TokenType::UNTILSY) {
-            node->addChild(parseStatement());
+
+        if (peek().type == TokenType::ENDSY || peek().type == TokenType::UNTILSY) {
+            break;
         }
+
+        node->addChild(parseStatement());
     }
+
     return node;
 }
 
@@ -112,8 +122,9 @@ ParseTreeNode* Parser::parseStatement() {
             return parseAssignmentStatement();
         }
     }
-
-    return new ParseTreeNode("<empty-statement>");
+    Token cur = peek();
+    throw SyntaxError(cur.line, cur.col, tokenTypeName(cur.type),
+        "statement (begin, if, case, while, repeat, for, assignment, call)");
 }
 
 ParseTreeNode* Parser::parseAssignmentStatement() {

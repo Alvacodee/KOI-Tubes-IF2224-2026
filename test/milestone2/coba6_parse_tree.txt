@@ -1,0 +1,53 @@
+<program>
+├── <program-header>
+│   ├── programsy(program)
+│   ├── ident(Panggil)
+│   └── semicolon(;)
+├── <block>
+│   ├── <declaration-part>
+│   └── <compound-statement>
+│       ├── beginsy(begin)
+│       ├── <statement-list>
+│       │   ├── <procedure/function-call>
+│       │   │   ├── ident(write)
+│       │   │   ├── lparent(()
+│       │   │   ├── <parameter-list>
+│       │   │   │   └── <expression>
+│       │   │   │       └── <simple-expression>
+│       │   │   │           └── <term>
+│       │   │   │               └── <factor>
+│       │   │   │                   └── string('Halo')
+│       │   │   └── rparent())
+│       │   ├── semicolon(;)
+│       │   ├── <procedure/function-call>
+│       │   │   ├── ident(read)
+│       │   │   ├── lparent(()
+│       │   │   ├── <parameter-list>
+│       │   │   │   └── <expression>
+│       │   │   │       └── <simple-expression>
+│       │   │   │           └── <term>
+│       │   │   │               └── <factor>
+│       │   │   │                   └── <variable>
+│       │   │   │                       └── ident(x)
+│       │   │   └── rparent())
+│       │   ├── semicolon(;)
+│       │   └── <assignment-statement>
+│       │       ├── <variable>
+│       │       │   └── ident(x)
+│       │       ├── becomes(:=)
+│       │       └── <expression>
+│       │           └── <simple-expression>
+│       │               └── <term>
+│       │                   └── <factor>
+│       │                       └── <procedure/function-call>
+│       │                           ├── ident(abs)
+│       │                           ├── lparent(()
+│       │                           ├── <parameter-list>
+│       │                           │   └── <expression>
+│       │                           │       └── <simple-expression>
+│       │                           │           └── <term>
+│       │                           │               └── <factor>
+│       │                           │                   └── intcon(-5)
+│       │                           └── rparent())
+│       └── endsy(end)
+└── period(.)

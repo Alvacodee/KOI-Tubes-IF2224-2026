@@ -1,0 +1,6 @@
+program Panggil;
+begin
+    write('Halo');
+    read(x);
+    x := abs(-5)
+end.

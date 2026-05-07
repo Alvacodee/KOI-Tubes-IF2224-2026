@@ -1,0 +1,44 @@
+--- Isi File Input ---
+program Pilih;
+var i: integer;
+begin
+    i := 2;
+    case i of
+        0: i := 100;
+        1, 2: i := 200
+    end
+end.
+
+--- Hasil Lexical Analysis ---
+programsy
+ident(Pilih)
+semicolon
+varsy
+ident(i)
+colon
+ident(integer)
+semicolon
+beginsy
+ident(i)
+becomes
+intcon(2)
+semicolon
+casesy
+ident(i)
+ofsy
+intcon(0)
+colon
+ident(i)
+becomes
+intcon(100)
+semicolon
+intcon(1)
+comma
+intcon(2)
+colon
+ident(i)
+becomes
+intcon(200)
+endsy
+endsy
+period

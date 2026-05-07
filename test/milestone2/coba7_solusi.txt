@@ -1,0 +1,48 @@
+--- Isi File Input ---
+program Ekspresi;
+var a, b: real;
+begin
+    a := 1.5;
+    b := (a + 3.0) * 2.0 / (a - 0.5) and not (a = 0.0)
+end.
+
+--- Hasil Lexical Analysis ---
+programsy
+ident(Ekspresi)
+semicolon
+varsy
+ident(a)
+comma
+ident(b)
+colon
+ident(real)
+semicolon
+beginsy
+ident(a)
+becomes
+realcon(1.5)
+semicolon
+ident(b)
+becomes
+lparent
+ident(a)
+plus
+realcon(3.0)
+rparent
+times
+realcon(2.0)
+rdiv
+lparent
+ident(a)
+minus
+realcon(0.5)
+rparent
+andsy
+notsy
+lparent
+ident(a)
+eql
+realcon(0.0)
+rparent
+endsy
+period

@@ -1,0 +1,21 @@
+<program>
+├── <program-header>
+│   ├── programsy(program)
+│   ├── ident(Salah)
+│   └── semicolon(;)
+├── <block>
+│   ├── <declaration-part>
+│   └── <compound-statement>
+│       ├── beginsy(begin)
+│       ├── <statement-list>
+│       │   └── <assignment-statement>
+│       │       ├── <variable>
+│       │       │   └── ident(x)
+│       │       ├── becomes(:=)
+│       │       └── <expression>
+│       │           └── <simple-expression>
+│       │               └── <term>
+│       │                   └── <factor>
+│       │                       └── intcon(5)
+│       └── endsy(end)
+└── period(.)

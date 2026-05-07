@@ -1,0 +1,6 @@
+program Ekspresi;
+var a, b: real;
+begin
+    a := 1.5;
+    b := (a + 3.0) * 2.0 / (a - 0.5) and not (a = 0.0)
+end.
