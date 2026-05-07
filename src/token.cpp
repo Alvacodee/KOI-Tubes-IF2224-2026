@@ -62,6 +62,7 @@ std::string tokenTypeName(TokenType type) {
         case TokenType::IDENT:       return "ident";
         case TokenType::COMMENT:     return "comment";
         case TokenType::ERROR_TOK:   return "error";
+        case TokenType::EOF_TOK:     return "EOF";
         default:                     return "unknown";
     }
 }

@@ -9,24 +9,24 @@ END.
 
 --- Hasil Lexical Analysis ---
 programsy
-ident (MyTest)
+ident(MyTest)
 semicolon
 varsy
-ident (X)
+ident(X)
 colon
-ident (INTEGER)
+ident(INTEGER)
 semicolon
 beginsy
 ifsy
-ident (X)
+ident(X)
 gtr
-intcon (0)
+intcon(0)
 thensy
-ident (X)
+ident(X)
 becomes
-ident (X)
+ident(X)
 idiv
-intcon (2)
+intcon(2)
 semicolon
 endsy
 period
