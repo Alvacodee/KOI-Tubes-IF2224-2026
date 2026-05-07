@@ -3,9 +3,6 @@
 #include <string>
 #include <vector>
 #include "token.hpp"
-#include "literal.hpp"
-#include "identifier.hpp"
-#include "operator.hpp"
 #include "lexer.hpp"
 #include "parser.hpp"
 
@@ -58,10 +55,7 @@ int main() {
 
     while (true) {
         Token t = lexer.getNextToken();
-
-        if (t.type == TokenType::ERROR_TOK && t.value == "EOF") {
-            break;
-        }
+        if (t.type == TokenType::ERROR_TOK && t.value == "EOF") break;
 
         if (t.type == TokenType::COMMENT) {
             cout << tokenTypeName(t.type) << " (" << t.value << ")" << endl;
@@ -80,7 +74,6 @@ int main() {
         tokenList.push_back(t);
     }
 
-    inputFile.close();
     outputFile.close();
 
     cout << "\n--- Selesai Lexical Analysis ---" << endl;

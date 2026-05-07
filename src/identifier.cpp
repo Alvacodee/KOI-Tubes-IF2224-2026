@@ -6,7 +6,6 @@ bool isIdentChar(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
 }
 
-// fix case sensitive problem
 TokenType classifyIdent(const std::string& w) {
     std::string lower = w;
     std::transform(lower.begin(), lower.end(), lower.begin(),

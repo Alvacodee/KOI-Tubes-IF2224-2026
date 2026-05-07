@@ -54,4 +54,24 @@ private:
     ParseTreeNode* parseFunctionDeclaration();
     ParseTreeNode* parseFormalParameterList();
     ParseTreeNode* parseParameterGroup();
+
+    ParseTreeNode* parseStatementList();
+    ParseTreeNode* parseStatement();
+    ParseTreeNode* parseAssignmentStatement();
+    ParseTreeNode* parseIfStatement();
+    ParseTreeNode* parseCaseStatement();
+    ParseTreeNode* parseCaseBlock();
+    ParseTreeNode* parseWhileStatement();
+    ParseTreeNode* parseRepeatStatement();
+    ParseTreeNode* parseForStatement();
+
+    ParseTreeNode* parseExpression();
+    ParseTreeNode* parseSimpleExpression();
+    ParseTreeNode* parseTerm();
+    ParseTreeNode* parseFactor();
+    ParseTreeNode* parseProcFuncCall();
+    ParseTreeNode* parseParameterList();
+    ParseTreeNode* parseVariable();
+    ParseTreeNode* parseComponentVariable(ParseTreeNode* varNode);
+    ParseTreeNode* parseIndexList();
 };
