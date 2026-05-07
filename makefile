@@ -10,7 +10,9 @@ SRCS = $(SRC_DIR)/main.cpp \
        $(SRC_DIR)/literal.cpp \
        $(SRC_DIR)/operator.cpp \
        $(SRC_DIR)/lexer.cpp \
+       $(SRC_DIR)/parse_tree_node.cpp \
        $(SRC_DIR)/parser.cpp \
+       $(SRC_DIR)/parser_declaration.cpp \
        $(SRC_DIR)/expression.cpp
 
 OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
