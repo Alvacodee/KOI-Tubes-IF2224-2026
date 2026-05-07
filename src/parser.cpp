@@ -150,13 +150,25 @@ ParseTreeNode* Parser::parseCaseStatement() {
 
 ParseTreeNode* Parser::parseCaseBlock() {
     ParseTreeNode* node = new ParseTreeNode("<case-block>");
+
     node->addChild(parseConstant());
+
+    while (peek().type == TokenType::COMMA) {
+        node->addChild(match(TokenType::COMMA));
+        node->addChild(parseConstant());
+    }
+
     node->addChild(match(TokenType::COLON));
     node->addChild(parseStatement());
+
     while (peek().type == TokenType::SEMICOLON) {
         node->addChild(match(TokenType::SEMICOLON));
         if (peek().type != TokenType::ENDSY) {
             node->addChild(parseConstant());
+            while (peek().type == TokenType::COMMA) {
+                node->addChild(match(TokenType::COMMA));
+                node->addChild(parseConstant());
+            }
             node->addChild(match(TokenType::COLON));
             node->addChild(parseStatement());
         }
