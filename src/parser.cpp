@@ -91,30 +91,29 @@ ParseTreeNode* Parser::parseStatementList() {
 }
 
 ParseTreeNode* Parser::parseStatement() {
-    ParseTreeNode* node = new ParseTreeNode("<statement>");
     TokenType t = peek().type;
 
     if (t == TokenType::BEGINSY) {
-        node->addChild(parseCompoundStatement());
+        return parseCompoundStatement(); 
     } else if (t == TokenType::IFSY) {
-        node->addChild(parseIfStatement());
+        return parseIfStatement();
     } else if (t == TokenType::CASESY) {
-        node->addChild(parseCaseStatement());
+        return parseCaseStatement();
     } else if (t == TokenType::WHILESY) {
-        node->addChild(parseWhileStatement());
+        return parseWhileStatement();
     } else if (t == TokenType::REPEATSY) {
-        node->addChild(parseRepeatStatement());
+        return parseRepeatStatement();
     } else if (t == TokenType::FORSY) {
-        node->addChild(parseForStatement());
+        return parseForStatement();
     } else if (t == TokenType::IDENT) {
         if (currentIndex + 1 < (int)tokens.size() && tokens[currentIndex + 1].type == TokenType::LPARENT) {
-            node->addChild(parseProcFuncCall());
+            return parseProcFuncCall();
         } else {
-            node->addChild(parseAssignmentStatement());
+            return parseAssignmentStatement();
         }
     }
 
-    return node;
+    return new ParseTreeNode("<empty-statement>");
 }
 
 ParseTreeNode* Parser::parseAssignmentStatement() {
