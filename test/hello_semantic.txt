@@ -1,0 +1,37 @@
+--- Decorated AST ---
+ProgramNode('Hello')
+└── Block → tab[1], lev:1
+    ├── Declarations
+    │   └── VarDecl
+    │       ├── VarDecl('a') → tab[35], type:integer, lev:1
+    │       └── VarDecl('b') → tab[36], type:integer, lev:1
+    └── CompoundStatement
+        └── StatementList
+            ├── Assign
+            │   ├── Var('a') → tab[35], type:integer
+            │   └── IntLit('5') → type:integer
+            ├── Assign
+            │   ├── Var('b') → tab[36], type:integer
+            │   └── BinOp op=plus → type:integer
+            │       ├── Var('a') → tab[35], type:integer
+            │       └── IntLit('10') → type:integer
+            └── ProcCall('writeln')
+                ├── StrLit(''Result = '') → type:string
+                └── Var('b') → tab[36], type:integer
+
+
+--- Symbol Table (tab) ---
+idx  identifier          obj         type    ref   nrm   lev   adr     link    
+-------------------------------------------------------------------------------
+34   hello               program     none    0     1     0     0       33      
+35   a                   variable    integer 0     1     1     0       0       
+36   b                   variable    integer 0     1     1     1       35      
+
+--- Block Table (btab) ---
+idx   last    lpar    psze    vsze    
+----------------------------------------
+0     34      0       0       0       
+1     36      0       0       2       
+
+--- Array Table (atab) ---
+(kosong)

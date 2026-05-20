@@ -2,7 +2,6 @@
 #include <iostream>
 #include <string>
 #include "token.hpp"
-#include "literal.hpp"
 #include "identifier.hpp"
 #include "operator.hpp"
 
