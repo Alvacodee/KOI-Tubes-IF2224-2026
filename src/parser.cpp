@@ -122,9 +122,8 @@ ParseTreeNode* Parser::parseStatement() {
             return parseAssignmentStatement();
         }
     }
-    Token cur = peek();
-    throw SyntaxError(cur.line, cur.col, tokenTypeName(cur.type),
-        "statement (begin, if, case, while, repeat, for, assignment, call)");
+    // empty statement: kembalikan node kosong (valid untuk ; di akhir)
+    return new ParseTreeNode("<empty-statement>");
 }
 
 ParseTreeNode* Parser::parseAssignmentStatement() {
@@ -191,7 +190,8 @@ ParseTreeNode* Parser::parseWhileStatement() {
     node->addChild(match(TokenType::WHILESY));
     node->addChild(parseExpression());
     node->addChild(match(TokenType::DOSY));
-    node->addChild(parseStatement());
+    // M3: body wajib compound-statement
+    node->addChild(parseCompoundStatement());
     return node;
 }
 
@@ -217,6 +217,7 @@ ParseTreeNode* Parser::parseForStatement() {
     }
     node->addChild(parseExpression());
     node->addChild(match(TokenType::DOSY));
-    node->addChild(parseStatement());
+    // M3: body wajib compound-statement
+    node->addChild(parseCompoundStatement());
     return node;
 }

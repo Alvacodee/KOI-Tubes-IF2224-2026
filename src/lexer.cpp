@@ -16,7 +16,8 @@ void Lexer::readNextChar() {
 }
 
 void Lexer::skipWhitespace() {
-    while (!eofReached && (currentChar == ' ' || currentChar == '\t' || currentChar == '\r' || currentChar == '\n')) {
+    while (!eofReached && (currentChar == ' ' || currentChar == '\t' ||
+                           currentChar == '\r' || currentChar == '\n')) {
         if (currentChar == '\n') currentLine++;
         readNextChar();
     }
@@ -29,122 +30,121 @@ Token Lexer::getNextToken() {
         return Token(TokenType::ERROR_TOK, "EOF", currentLine);
     }
 
-    // Komentar
-    if (currentChar == '{' || (currentChar == '(')) {
-        bool isCommentCandidate = false;
-        if (currentChar == '{') isCommentCandidate = true;
-        else {
-            readNextChar();
-            if (currentChar == '*') isCommentCandidate = true;
-            else {
-                return Token(TokenType::LPARENT, "(", currentLine);
-            }
+    // --- Komentar: { } atau (* *) ---
+    if (currentChar == '{') {
+        std::string content;
+        bool closed = false;
+        while (readNextChar(), !eofReached) {
+            if (currentChar == '\n') currentLine++;
+            if (currentChar == '}') { closed = true; readNextChar(); break; }
+            content += currentChar;
         }
+        if (!closed) std::cerr << "Error: komentar tidak tertutup\n";
+        return Token(TokenType::COMMENT, content, currentLine);
+    }
 
-        if (isCommentCandidate) {
-            std::string content = "";
+    if (currentChar == '(') {
+        readNextChar();
+        if (currentChar == '*') {
+            // komentar (* ... *)
+            std::string content;
             bool closed = false;
-            while (readNextChar(), !eofReached) {
+            while (!eofReached) {
+                readNextChar();
+                if (eofReached) break;
                 if (currentChar == '\n') currentLine++;
-                
-                if (currentChar == '}') {
-                    closed = true;
-                    readNextChar();
-                    break;
-                }
                 if (currentChar == '*') {
                     readNextChar();
-                    if (currentChar == ')') {
-                        closed = true;
-                        readNextChar();
-                        break;
-                    }
+                    if (currentChar == ')') { closed = true; readNextChar(); break; }
                     content += '*';
                 }
                 if (!eofReached) content += currentChar;
             }
-
-            if (!closed) {
-                std::cerr << "Error: Komentar tidak tertutup pada baris " << currentLine-1 << std::endl;
-                return getNextToken();
-            }
+            if (!closed) std::cerr << "Error: komentar tidak tertutup\n";
             return Token(TokenType::COMMENT, content, currentLine);
         }
+        // bukan komentar, kembalikan LPARENT
+        return Token(TokenType::LPARENT, "(", currentLine);
     }
 
-
-    bool isNegative = false;
-    if (currentChar == '-') {
-        readNextChar();
-        if (currentChar >= '0' && currentChar <= '9') isNegative = true;
-        else {
-            return Token(TokenType::MINUS, "-", currentLine);
-        }
-    }
-
+    // --- Angka ---
     if (currentChar >= '0' && currentChar <= '9') {
-        std::string numBuffer = isNegative ? "-" : "";
+        std::string numBuf;
         int dotCount = 0;
-
         while (!eofReached && ((currentChar >= '0' && currentChar <= '9') || currentChar == '.')) {
             if (currentChar == '.') {
+                // lookahead: jika char berikutnya juga '.', ini range, bukan desimal
+                int next = inputStream.peek();
+                if (next == '.') break;
                 dotCount++;
-                if (dotCount > 1) break; 
+                if (dotCount > 1) break;
+                numBuf += '.';
+                readNextChar();
+                // setelah titik harus digit agar valid realcon
+                if (!(currentChar >= '0' && currentChar <= '9')) {
+                    numBuf.pop_back();
+                    dotCount--;
+                    break;
+                }
+                continue;
             }
-            numBuffer += currentChar;
+            numBuf += currentChar;
             readNextChar();
-            
+            // tangani 'e'/'E' sebagai error (tidak valid di Arion)
             if (currentChar == 'e' || currentChar == 'E') {
                 while (!eofReached && !isspace(currentChar) && !isOperatorChar(currentChar)) {
-                    numBuffer += currentChar;
+                    numBuf += currentChar;
                     readNextChar();
                 }
-                return Token(TokenType::ERROR_TOK, numBuffer, currentLine);
+                return Token(TokenType::ERROR_TOK, numBuf, currentLine);
             }
         }
-
-        TokenType type = (dotCount == 1) ? TokenType::REALCON : TokenType::INTCON;
-        return Token(type, numBuffer, currentLine);
+        TokenType ty = (dotCount == 1) ? TokenType::REALCON : TokenType::INTCON;
+        return Token(ty, numBuf, currentLine);
     }
 
+    // --- Identifier / Keyword ---
     if ((currentChar >= 'a' && currentChar <= 'z') || (currentChar >= 'A' && currentChar <= 'Z')) {
-        std::string identBuffer = "";
+        std::string identBuf;
         while (!eofReached && isIdentChar(currentChar)) {
-            identBuffer += currentChar;
+            identBuf += currentChar;
             readNextChar();
         }
-        return Token(classifyIdent(identBuffer), identBuffer, currentLine);
+        return Token(classifyIdent(identBuf), identBuf, currentLine);
     }
 
+    // --- String / Char ---
     if (currentChar == '\'') {
-        std::string strBuffer = "'";
+        std::string strBuf = "'";
         while (readNextChar(), !eofReached && currentChar != '\'') {
-            strBuffer += currentChar;
+            strBuf += currentChar;
         }
-        strBuffer += currentChar; 
+        strBuf += '\'';
         readNextChar();
-        TokenType type = (strBuffer.length() == 3) ? TokenType::CHARCON : TokenType::STRING_TOK;
-        return Token(type, strBuffer, currentLine);
+        // charcon: 'x' (panjang 3), sisanya string
+        TokenType ty = (strBuf.size() == 3) ? TokenType::CHARCON : TokenType::STRING_TOK;
+        return Token(ty, strBuf, currentLine);
     }
 
+    // --- Operator ---
     if (isOperatorChar(currentChar)) {
-        std::string opBuffer = "";
-        opBuffer += currentChar;
+        std::string opBuf;
+        opBuf += currentChar;
         char first = currentChar;
         readNextChar();
 
         if (first == ':' && currentChar == '=') {
-            opBuffer += currentChar;
-            readNextChar();
+            opBuf += currentChar; readNextChar();
+        } else if (first == '=' && currentChar == '=') {
+            // == sebagai satu token EQL
+            opBuf += currentChar; readNextChar();
         } else if (first == '<' && (currentChar == '=' || currentChar == '>')) {
-            opBuffer += currentChar;
-            readNextChar();
+            opBuf += currentChar; readNextChar();
         } else if (first == '>' && currentChar == '=') {
-            opBuffer += currentChar;
-            readNextChar();
+            opBuf += currentChar; readNextChar();
         }
-        
-        return Token(classifyOperator(opBuffer), opBuffer, currentLine);
+
+        return Token(classifyOperator(opBuf), opBuf, currentLine);
     }
 
     std::string unknown(1, currentChar);
