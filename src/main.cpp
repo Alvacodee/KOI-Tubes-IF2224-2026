@@ -6,6 +6,7 @@
 #include "lexer.hpp"
 #include "parser.hpp"
 #include "semantic.hpp"
+#include "parse_tree_reader.hpp"
 
 using namespace std;
 
