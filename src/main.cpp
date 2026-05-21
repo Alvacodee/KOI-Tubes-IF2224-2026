@@ -10,34 +10,77 @@
 
 using namespace std;
 
-int main() {
-    cout << "Masukkan alamat file.txt: ";
-    string filename;
-    cin >> filename;
+void printDecoratedAST(ostream& out, const ASTNode* ast) {
+    if (!ast) return;
+    out << "ProgramNode('" << ast->value << "')" << endl;
+    string pfx = "";
+    for (int i = 0; i < (int)ast->children.size(); i++)
+        if (ast->children[i])
+            ast->children[i]->print(out, pfx, i == (int)ast->children.size()-1);
+}
 
+void runSemanticAndPrint(ParseTreeNode* parseTree, const string& outSemantic) {
+    SemanticAnalyzer sem;
+    ASTNode* ast = nullptr;
+
+    try {
+        ast = sem.analyze(parseTree);
+    } catch (const SemanticError& e) {
+        cerr << e.what() << endl;
+    } catch (const exception& e) {
+        cerr << "Error semantic: " << e.what() << endl;
+    }
+
+    if (ast) {
+        cout << "\n--- Decorated AST ---" << endl;
+        printDecoratedAST(cout, ast);
+    }
+
+    cout << endl;
+    sem.printResults(cout);
+
+    ofstream semFile(outSemantic);
+    if (semFile.is_open()) {
+        if (ast) {
+            semFile << "--- Decorated AST ---\n";
+            printDecoratedAST(semFile, ast);
+            semFile << "\n";
+        }
+        sem.printResults(semFile);
+        semFile.close();
+        cout << "Output: " << outSemantic << endl;
+    }
+
+    if (!sem.errors.empty()) {
+        cout << "\n--- Semantic Errors (" << sem.errors.size() << ") ---" << endl;
+        for (auto& e : sem.errors) cout << e << endl;
+    }
+
+    delete ast;
+}
+
+void modeSourceCode(const string& filename) {
     ifstream inputFile(filename);
     if (!inputFile.is_open()) {
         cerr << "Error: Tidak dapat membuka file " << filename << endl;
-        return 1;
+        return;
     }
 
-    // Buat nama file output (hapus .txt, tambah _solusi.txt)
     string base = filename;
     size_t dotPos = base.find_last_of('.');
     if (dotPos != string::npos) base = base.substr(0, dotPos);
 
-    string outLexer   = base + "_solusi.txt";
-    string outParser  = base + "_parse_tree.txt";
-    string outSemantic= base + "_semantic.txt";
+    string outLexer    = base + "_solusi.txt";
+    string outParser   = base + "_parse_tree.txt";
+    string outSemantic = base + "_semantic.txt";
 
     ofstream outputFile(outLexer);
     if (!outputFile.is_open()) {
         cerr << "Error: Tidak dapat membuat file output " << outLexer << endl;
-        return 1;
+        return;
     }
 
-    // ---- Lexical Analysis ----
-    cout << "\n--- Hasil Lexical Analysis ---" << endl;
+    cout << "--- Lexical Analysis ---" << endl;
     outputFile << "--- Hasil Lexical Analysis ---" << endl;
 
     Lexer lexer(inputFile);
@@ -46,8 +89,7 @@ int main() {
     while (true) {
         Token t = lexer.getNextToken();
         if (t.type == TokenType::ERROR_TOK && t.value == "EOF") break;
-
-        if (t.type == TokenType::COMMENT) continue; // M3: comment tidak dijadikan node
+        if (t.type == TokenType::COMMENT) continue;
 
         string display;
         if (tokenHasValue(t.type))
@@ -55,87 +97,73 @@ int main() {
         else
             display = tokenTypeName(t.type);
 
-        cout     << display << endl;
+        cout       << display << endl;
         outputFile << display << endl;
         tokenList.push_back(t);
     }
     outputFile.close();
 
-    cout << "\n--- Selesai Lexical Analysis ---" << endl;
-    cout << "Output lexer: " << outLexer << endl;
-
-    // ---- Syntax Analysis ----
-    cout << "\n--- Memulai Syntax Analysis ---" << endl;
+    cout << "\n--- Parse Tree ---" << endl;
     Parser parser(tokenList);
     ParseTreeNode* parseTree = nullptr;
 
     try {
         parseTree = parser.parse();
-        cout << "\n--- Parse Tree ---" << endl;
         parseTree->print(cout);
         parseTree->printToFile(outParser);
-        cout << "Parse tree disimpan: " << outParser << endl;
     } catch (const SyntaxError& e) {
-        cerr << "\n" << e.what() << endl;
-        return 1;
-    }
-
-    // ---- Semantic Analysis ----
-    cout << "\n--- Memulai Semantic Analysis ---" << endl;
-
-    SemanticAnalyzer sem;
-    ASTNode* ast = nullptr;
-
-    try {
-        ast = sem.analyze(parseTree);
-    } catch (const SemanticError& e) {
         cerr << e.what() << endl;
-        // tidak return, tetap cetak hasil parsial
-    } catch (const exception& e) {
-        cerr << "Error semantic: " << e.what() << endl;
+        return;
     }
 
-    // Cetak Decorated AST
-    if (ast) {
-        cout << "\n--- Decorated AST ---" << endl;
-        // cetak root secara manual
-        cout << "ProgramNode('" << ast->value << "')" << endl;
-        string pfx = "";
-        for (int i = 0; i < (int)ast->children.size(); i++)
-            if (ast->children[i])
-                ast->children[i]->print(cout, pfx, i == (int)ast->children.size()-1);
-    }
-
-    // Cetak symbol tables ke terminal dan file
-    cout << endl;
-    sem.printResults(cout);
-
-    ofstream semFile(outSemantic);
-    if (semFile.is_open()) {
-        if (ast) {
-            semFile << "--- Decorated AST ---\n";
-            semFile << "ProgramNode('" << ast->value << "')\n";
-            string pfx = "";
-            for (int i = 0; i < (int)ast->children.size(); i++)
-                if (ast->children[i])
-                    ast->children[i]->print(semFile, pfx, i == (int)ast->children.size()-1);
-            semFile << "\n";
-        }
-        sem.printResults(semFile);
-        semFile.close();
-        cout << "\nHasil semantic disimpan: " << outSemantic << endl;
-    }
-
-    // Cetak error jika ada
-    if (!sem.errors.empty()) {
-        cout << "\n--- Semantic Errors (" << sem.errors.size() << ") ---" << endl;
-        for (auto& e : sem.errors) cout << e << endl;
-    }
-
-    // Bersihkan memori
+    runSemanticAndPrint(parseTree, outSemantic);
     delete parseTree;
-    delete ast;
+}
 
-    cout << "\n--- Selesai ---" << endl;
+void modeParseTreeFile(const string& filename) {
+    ParseTreeNode* parseTree = ParseTreeReader::readFromFile(filename);
+    if (!parseTree) {
+        cerr << "Error: Gagal membaca parse tree dari file." << endl;
+        return;
+    }
+
+    cout << "--- Parse Tree (dari file) ---" << endl;
+    parseTree->print(cout);
+
+    string base = filename;
+    size_t dotPos = base.find_last_of('.');
+    if (dotPos != string::npos) base = base.substr(0, dotPos);
+    string outSemantic = base + "_semantic.txt";
+
+    runSemanticAndPrint(parseTree, outSemantic);
+    delete parseTree;
+}
+
+int main(int argc, char* argv[]) {
+    if (argc >= 3) {
+        string mode = argv[1];
+        string file = argv[2];
+        if (mode == "-s") modeSourceCode(file);
+        else if (mode == "-p") modeParseTreeFile(file);
+        else cerr << "Mode: -s (source) atau -p (parse tree)" << endl;
+        return 0;
+    }
+
+    cout << "Pilih mode:" << endl;
+    cout << "  1. Source code  (Lexer -> Parser -> Semantic)" << endl;
+    cout << "  2. Parse tree   (ParseTreeReader -> Semantic)" << endl;
+    cout << "Pilihan (1/2): ";
+
+    string choice;
+    cin >> choice;
+
+    cout << "Masukkan alamat file: ";
+    string filename;
+    cin >> filename;
+
+    if (choice == "1") modeSourceCode(filename);
+    else if (choice == "2") modeParseTreeFile(filename);
+    else cerr << "Pilihan tidak valid." << endl;
+
     return 0;
 }
