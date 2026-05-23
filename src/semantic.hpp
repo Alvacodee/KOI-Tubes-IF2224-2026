@@ -51,24 +51,23 @@ public:
     int evalConstant(ParseTreeNode* n);
     int typeOfConstant(ParseTreeNode* n);
 
-    // Bagian 3 (INI SEHARUSNYA PUNYA LO WAN)
-    // ASTNode* visitCompoundStatement(ParseTreeNode* n);
-    // ASTNode* visitStatementList(ParseTreeNode* n);
-    // ASTNode* visitStatement(ParseTreeNode* n);
-    // ASTNode* visitAssignStatement(ParseTreeNode* n);
-    // ASTNode* visitIfStatement(ParseTreeNode* n);
-    // ASTNode* visitWhileStatement(ParseTreeNode* n);
-    // ASTNode* visitForStatement(ParseTreeNode* n);
-    // ASTNode* visitRepeatStatement(ParseTreeNode* n);
-    // ASTNode* visitCaseStatement(ParseTreeNode* n);
-    // ASTNode* visitProcCall(ParseTreeNode* n);
+    ASTNode* visitCompoundStatement(ParseTreeNode* n);
+    ASTNode* visitStatementList(ParseTreeNode* n);
+    ASTNode* visitStatement(ParseTreeNode* n);
+    ASTNode* visitAssignStatement(ParseTreeNode* n);
+    ASTNode* visitIfStatement(ParseTreeNode* n);
+    ASTNode* visitWhileStatement(ParseTreeNode* n);
+    ASTNode* visitForStatement(ParseTreeNode* n);
+    ASTNode* visitRepeatStatement(ParseTreeNode* n);
+    ASTNode* visitCaseStatement(ParseTreeNode* n);
+    ASTNode* visitProcCall(ParseTreeNode* n);
 
-    // // Ekspresi (stubs untuk Part 3, diisi di semantic_expr.cpp)
-    // ASTNode* visitExpression(ParseTreeNode* n);
-    // ASTNode* visitSimpleExpression(ParseTreeNode* n);
-    // ASTNode* visitTerm(ParseTreeNode* n);
-    // ASTNode* visitFactor(ParseTreeNode* n);
-    // ASTNode* visitVariable(ParseTreeNode* n);
+    // Ekspresi (stubs untuk Part 3, diisi di semantic_expr.cpp)
+    ASTNode* visitExpression(ParseTreeNode* n);
+    ASTNode* visitSimpleExpression(ParseTreeNode* n);
+    ASTNode* visitTerm(ParseTreeNode* n);
+    ASTNode* visitFactor(ParseTreeNode* n);
+    ASTNode* visitVariable(ParseTreeNode* n);
 
     // Output
     void printResults(std::ostream& out) const;
