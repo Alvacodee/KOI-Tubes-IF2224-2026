@@ -31,7 +31,11 @@ void runSemanticAndPrint(ParseTreeNode* parseTree, const string& outSemantic) {
         cerr << "Error semantic: " << e.what() << endl;
     }
 
-    if (ast) {
+    if (!sem.errors.empty()) {
+        cout << "\n[!] Proses Semantic Analysis GAGAL. Ditemukan " 
+             << sem.errors.size() << " kesalahan semantik:" << endl;
+        for (auto& e : sem.errors) cout << "  - " << e << endl;
+    } else if (ast) {
         cout << "\n--- Decorated AST ---" << endl;
         printDecoratedAST(cout, ast);
     }
@@ -41,19 +45,21 @@ void runSemanticAndPrint(ParseTreeNode* parseTree, const string& outSemantic) {
 
     ofstream semFile(outSemantic);
     if (semFile.is_open()) {
-        if (ast) {
+        if (!sem.errors.empty()) {
+            semFile << "--- Semantic Errors (" << sem.errors.size() << ") ---\n";
+            for (auto& e : sem.errors) {
+                semFile << "  - " << e << "\n";
+            }
+            semFile << "\n";
+        } else if (ast) {
             semFile << "--- Decorated AST ---\n";
             printDecoratedAST(semFile, ast);
             semFile << "\n";
         }
+        
         sem.printResults(semFile);
         semFile.close();
         cout << "Output: " << outSemantic << endl;
-    }
-
-    if (!sem.errors.empty()) {
-        cout << "\n--- Semantic Errors (" << sem.errors.size() << ") ---" << endl;
-        for (auto& e : sem.errors) cout << e << endl;
     }
 
     delete ast;
