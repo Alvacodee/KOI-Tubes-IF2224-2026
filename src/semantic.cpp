@@ -158,13 +158,12 @@ ASTNode* SemanticAnalyzer::visitAssignStatement(ParseTreeNode* n) {
     }
 
     if (targetAST && valueAST) {
-        // Cek kompatibilitas assignment
         bool compatible = false;
         if (targetAST->typeCode != T_NONE && valueAST->typeCode != T_NONE) {
             if (targetAST->typeCode == valueAST->typeCode) {
                 compatible = true;
             } else if (targetAST->typeCode == T_REAL && valueAST->typeCode == T_INTEGER) {
-                compatible = true; // integer ke real diperbolehkan
+                compatible = true; 
             }
         }
         if (!compatible) {
@@ -343,13 +342,8 @@ ASTNode* SemanticAnalyzer::visitExpression(ParseTreeNode* n) {
     }
     
     if (left && right) {
-        // Type checking operator relasional
         if (left->typeCode == T_NONE || right->typeCode == T_NONE) {
-            // error sudah dicatat di node masing-masing
         } else if (left->typeCode != right->typeCode) {
-            // Perbolehkan integer vs real? Tidak, relasional harus sama atau integer vs real?
-            // Di Arion, mungkin integer dan real bisa dibandingkan? Spesifikasi tidak jelas. 
-            // Untuk amannya, beri error jika tipe berbeda dan bukan (integer vs real)
             if (!((left->typeCode == T_INTEGER && right->typeCode == T_REAL) ||
                   (left->typeCode == T_REAL && right->typeCode == T_INTEGER))) {
                 addError("Type mismatch in relational operator '" + relop + 
