@@ -1,7 +1,8 @@
---- Semantic Errors (5) ---
+--- Semantic Errors (6) ---
   - Semantic Error: Type mismatch in assignment: cannot assign 'real' to 'integer'
   - Semantic Error: Type mismatch in assignment: cannot assign 'string' to 'integer'
   - Semantic Error: Variabel tidak dideklarasikan: undefVar
+  - Semantic Error: Type mismatch in assignment: cannot assign 'integer' to 'none'
   - Semantic Error: Case label constant type mismatch with case expression
   - Semantic Error: Case label constant type mismatch with case expression
 

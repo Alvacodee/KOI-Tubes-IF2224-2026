@@ -158,14 +158,19 @@ ASTNode* SemanticAnalyzer::visitAssignStatement(ParseTreeNode* n) {
     }
 
     if (targetAST && valueAST) {
+        // Cek kompatibilitas assignment
+        bool compatible = false;
         if (targetAST->typeCode != T_NONE && valueAST->typeCode != T_NONE) {
             if (targetAST->typeCode == valueAST->typeCode) {
+                compatible = true;
             } else if (targetAST->typeCode == T_REAL && valueAST->typeCode == T_INTEGER) {
-            } else {
-                addError("Type mismatch in assignment: cannot assign '" + 
-                    typeName(valueAST->typeCode) + "' to '" + 
-                    typeName(targetAST->typeCode) + "'");
+                compatible = true; // integer ke real diperbolehkan
             }
+        }
+        if (!compatible) {
+            addError("Type mismatch in assignment: cannot assign '" + 
+                typeName(valueAST->typeCode) + "' to '" + 
+                typeName(targetAST->typeCode) + "'");
         }
         ast->typeCode = targetAST->typeCode;
     }
@@ -322,14 +327,41 @@ ASTNode* SemanticAnalyzer::visitExpression(ParseTreeNode* n) {
     if (!n) return makeAST(AST_INT_LIT, "0");
     if (n->children.size() == 1 && isNT(n->children[0], "<simple-expression>"))
         return visitSimpleExpression(n->children[0]);
+    
     ASTNode* ast = makeAST(AST_BINOP);
+    ASTNode* left = nullptr;
+    ASTNode* right = nullptr;
+    std::string relop;
+    
     for (auto* c : n->children) {
-        if (isNT(c, "<simple-expression>"))    ast->add(visitSimpleExpression(c));
-        else if (isNT(c, "<relational-operator>")) {
-            for (auto* op : c->children) ast->op = tokTy(op);
+        if (isNT(c, "<simple-expression>")) {
+            if (!left) left = visitSimpleExpression(c);
+            else right = visitSimpleExpression(c);
+        } else if (isNT(c, "<relational-operator>")) {
+            for (auto* op : c->children) relop = tokTy(op);
         }
     }
-    ast->typeCode = T_BOOLEAN;
+    
+    if (left && right) {
+        // Type checking operator relasional
+        if (left->typeCode == T_NONE || right->typeCode == T_NONE) {
+            // error sudah dicatat di node masing-masing
+        } else if (left->typeCode != right->typeCode) {
+            // Perbolehkan integer vs real? Tidak, relasional harus sama atau integer vs real?
+            // Di Arion, mungkin integer dan real bisa dibandingkan? Spesifikasi tidak jelas. 
+            // Untuk amannya, beri error jika tipe berbeda dan bukan (integer vs real)
+            if (!((left->typeCode == T_INTEGER && right->typeCode == T_REAL) ||
+                  (left->typeCode == T_REAL && right->typeCode == T_INTEGER))) {
+                addError("Type mismatch in relational operator '" + relop + 
+                         "': cannot compare " + typeName(left->typeCode) + 
+                         " and " + typeName(right->typeCode));
+            }
+        }
+        ast->typeCode = T_BOOLEAN;
+        ast->add(left);
+        ast->add(right);
+        ast->op = relop;
+    }
     return ast;
 }
 

@@ -1,46 +1,5 @@
---- Decorated AST ---
-ProgramNode('TestExprError')
-└── Block → tab[1], lev:1
-    ├── Declarations
-    │   └── VarDecl
-    │       ├── VarDecl('x') → tab[39], type:integer, lev:1
-    │       ├── VarDecl('y') → tab[40], type:string, lev:1
-    │       └── VarDecl('b') → tab[41], type:boolean, lev:1
-    └── CompoundStatement
-        └── StatementList
-            ├── Assign → type:integer
-            │   ├── Var('x') → tab[39], type:integer
-            │   └── IntLit('5') → type:integer
-            ├── Assign → type:string
-            │   ├── Var('y') → tab[40], type:string
-            │   └── StrLit(''Arion'') → type:string
-            ├── Assign → type:boolean
-            │   ├── Var('b') → tab[41], type:boolean
-            │   └── Var('true') → tab[33], type:boolean
-            ├── Assign → type:integer
-            │   ├── Var('x') → tab[39], type:integer
-            │   └── BinOp op=plus → type:integer
-            │       ├── Var('x') → tab[39], type:integer
-            │       └── Var('y') → tab[40], type:string
-            ├── Assign → type:boolean
-            │   ├── Var('b') → tab[41], type:boolean
-            │   └── BinOp op=gtr → type:boolean
-            │       ├── Var('x') → tab[39], type:integer
-            │       └── Var('y') → tab[40], type:string
-            ├── Assign → type:boolean
-            │   ├── Var('b') → tab[41], type:boolean
-            │   └── UnOp op=not → type:boolean
-            │       └── Var('x') → tab[39], type:integer
-            ├── Assign → type:integer
-            │   ├── Var('x') → tab[39], type:integer
-            │   └── BinOp op=rdiv → type:integer
-            │       ├── Var('x') → tab[39], type:integer
-            │       └── IntLit('0') → type:integer
-            └── Assign → type:integer
-                ├── Var('x') → tab[39], type:integer
-                └── BinOp op=idiv → type:integer
-                    ├── Var('x') → tab[39], type:integer
-                    └── Var('y') → tab[40], type:string
+--- Semantic Errors (1) ---
+  - Semantic Error: Type mismatch in relational operator 'gtr': cannot compare integer and string
 
 
 --- Symbol Table (tab) ---
