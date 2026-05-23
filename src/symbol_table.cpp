@@ -54,6 +54,10 @@ void SymbolTable::initPredefined() {
     add("while",     OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 31
     add("false", OBJ_CONST, T_BOOLEAN, 0, 1, 0);  // 32: false = 0
     add("true",  OBJ_CONST, T_BOOLEAN, 0, 1, 1);  // 33: true  = 1
+    add("writeln", OBJ_PROC, T_NONE, 0, 1, 0);
+    add("write", OBJ_PROC, T_NONE, 0, 1, 0);
+    add("readln", OBJ_PROC, T_NONE, 0, 1, 0);
+    add("read", OBJ_PROC, T_NONE, 0, 1, 0);
 
     while ((int)tab.size() < FIRST_USER) {
         add("__reserved__", OBJ_KEYWORD, T_NONE, 0, 1, 0);

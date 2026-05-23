@@ -163,9 +163,9 @@ ASTNode* SemanticAnalyzer::visitAssignStatement(ParseTreeNode* n) {
             if (targetAST->typeCode == valueAST->typeCode) {
             } else if (targetAST->typeCode == T_REAL && valueAST->typeCode == T_INTEGER) {
             } else {
-                addError("Type mismatch in assignment. Cannot assign type " + 
-                         std::to_string(valueAST->typeCode) + " to type " + 
-                         std::to_string(targetAST->typeCode));
+                addError("Type mismatch in assignment: cannot assign '" + 
+                    typeName(valueAST->typeCode) + "' to '" + 
+                    typeName(targetAST->typeCode) + "'");
             }
         }
         ast->typeCode = targetAST->typeCode;
@@ -357,7 +357,7 @@ ASTNode* SemanticAnalyzer::visitSimpleExpression(ParseTreeNode* n) {
                 ast->op = curOp;
                 ast->add(left);
                 ast->add(t);
-                ast->typeCode = T_INTEGER;
+                ast->typeCode = (left->typeCode == T_REAL || t->typeCode == T_REAL) ? T_REAL : (curOp == "orsy") ? T_BOOLEAN : T_INTEGER;
                 left = ast;
                 ast = makeAST(AST_BINOP);
             }
@@ -390,7 +390,7 @@ ASTNode* SemanticAnalyzer::visitTerm(ParseTreeNode* n) {
                 ast->op = curOp;
                 ast->add(left);
                 ast->add(f);
-                ast->typeCode = T_INTEGER;
+                ast->typeCode = (left->typeCode == T_REAL || f->typeCode == T_REAL) ? T_REAL : (curOp == "andsy") ? T_BOOLEAN : T_INTEGER;
                 left = ast;
                 ast = makeAST(AST_BINOP);
             }
@@ -429,10 +429,21 @@ ASTNode* SemanticAnalyzer::visitFactor(ParseTreeNode* n) {
             else addError("Identifier tidak dideklarasikan: " + tokVal(c));
             return a;
         }
-        if (isTok(c, "notsy")) {
-            ASTNode* a = makeAST(AST_UNOP); a->op = "not";
+        if(isTok(c, "notsy")){
+            ASTNode* a = makeAST(AST_UNOP);
+            a->op = "not";
             a->typeCode = T_BOOLEAN;
-            a->add(visitFactor(n->children.back() == c ? n : c));
+            bool foundNot = false;
+            for (auto* inner : n->children){
+                if (isTok(inner, "notsy")){
+                    foundNot = true;
+                    continue;
+                }
+                if (foundNot && isNT(inner, "<factor>")){
+                    a->add(visitFactor(inner));
+                    return a;
+                }
+            }
             return a;
         }
         if (isNT(c, "<expression>"))           return visitExpression(c);

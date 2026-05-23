@@ -67,7 +67,7 @@ public:
     std::vector<int> display;
 
     // Indeks pertama entry user (setelah semua predefined)
-    static const int FIRST_USER = 34;
+    static const int FIRST_USER = 38;
 
     SymbolTable();
 
