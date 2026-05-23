@@ -1,20 +1,15 @@
 #include "semantic.hpp"
 #include <sstream>
 #include <algorithm>
+// #include <> //tambahin include nya disini wan
 
 SemanticAnalyzer::SemanticAnalyzer() {}
 
-// -----------------------------------------------
-// Entry point
-// -----------------------------------------------
 ASTNode* SemanticAnalyzer::analyze(ParseTreeNode* pt) {
     if (!pt) return nullptr;
     return visitProgram(pt);
 }
 
-// -----------------------------------------------
-// Helper: ambil value dari terminal "ident(Hello)" -> "Hello"
-// -----------------------------------------------
 std::string SemanticAnalyzer::tokVal(ParseTreeNode* n) const {
     auto& s = n->name;
     size_t lp = s.find('(');
@@ -24,7 +19,6 @@ std::string SemanticAnalyzer::tokVal(ParseTreeNode* n) const {
     return "";
 }
 
-// Ambil tipe terminal "ident(Hello)" -> "ident"
 std::string SemanticAnalyzer::tokTy(ParseTreeNode* n) const {
     auto& s = n->name;
     size_t lp = s.find('(');
@@ -51,15 +45,11 @@ void SemanticAnalyzer::addError(const std::string& msg) {
     std::cerr << "Semantic Error: " << msg << "\n";
 }
 
-// -----------------------------------------------
-// visitProgram: <program> -> <program-header> <block> period
-// -----------------------------------------------
+
 ASTNode* SemanticAnalyzer::visitProgram(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_PROGRAM);
 
-    // Ambil nama program dari <program-header>
-    ParseTreeNode* hdr = n->children[0]; // <program-header>
-    // child: programsy, ident(nama), semicolon
+    ParseTreeNode* hdr = n->children[0];
     std::string progName;
     for (auto* c : hdr->children)
         if (isTok(c, "ident")) { progName = tokVal(c); break; }
@@ -67,11 +57,9 @@ ASTNode* SemanticAnalyzer::visitProgram(ParseTreeNode* n) {
     ast->value = progName;
     ast->level = 0;
 
-    // Masukkan nama program ke tab
     int progIdx = symtab.enter(progName, OBJ_PROGRAM, T_NONE, 0, 1, 0);
     ast->tabIndex = progIdx;
 
-    // <block> adalah children[1]
     ParseTreeNode* blk = n->children[1];
     ASTNode* blockAst = visitBlock(blk);
     ast->add(blockAst);
@@ -79,9 +67,6 @@ ASTNode* SemanticAnalyzer::visitProgram(ParseTreeNode* n) {
     return ast;
 }
 
-// -----------------------------------------------
-// visitBlock: <block> -> <declaration-part> <compound-statement>
-// -----------------------------------------------
 ASTNode* SemanticAnalyzer::visitBlock(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_BLOCK);
 
@@ -89,8 +74,6 @@ ASTNode* SemanticAnalyzer::visitBlock(ParseTreeNode* n) {
     ast->tabIndex = bIdx;
     ast->level = symtab.curLevel;
 
-    // children[0] = <declaration-part>
-    // children[1] = <compound-statement>
     for (auto* c : n->children) {
         if (isNT(c, "<declaration-part>")) {
             ASTNode* declAst = visitDeclarationPart(c);
@@ -105,9 +88,6 @@ ASTNode* SemanticAnalyzer::visitBlock(ParseTreeNode* n) {
     return ast;
 }
 
-// -----------------------------------------------
-// visitDeclarationPart
-// -----------------------------------------------
 ASTNode* SemanticAnalyzer::visitDeclarationPart(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_DECL_PART);
 
@@ -125,9 +105,6 @@ ASTNode* SemanticAnalyzer::visitDeclarationPart(ParseTreeNode* n) {
     return ast;
 }
 
-// -----------------------------------------------
-// visitCompoundStatement: beginsy statement-list endsy
-// -----------------------------------------------
 ASTNode* SemanticAnalyzer::visitCompoundStatement(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_COMPOUND);
     for (auto* c : n->children) {
@@ -137,9 +114,6 @@ ASTNode* SemanticAnalyzer::visitCompoundStatement(ParseTreeNode* n) {
     return ast;
 }
 
-// -----------------------------------------------
-// visitStatementList
-// -----------------------------------------------
 ASTNode* SemanticAnalyzer::visitStatementList(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_STMT_LIST);
     for (auto* c : n->children) {
@@ -150,9 +124,6 @@ ASTNode* SemanticAnalyzer::visitStatementList(ParseTreeNode* n) {
     return ast;
 }
 
-// -----------------------------------------------
-// visitStatement: dispatch ke jenis statement
-// -----------------------------------------------
 ASTNode* SemanticAnalyzer::visitStatement(ParseTreeNode* n) {
     if (!n) return makeAST(AST_EMPTY);
 
@@ -169,254 +140,249 @@ ASTNode* SemanticAnalyzer::visitStatement(ParseTreeNode* n) {
     return makeAST(AST_EMPTY);
 }
 
-// -----------------------------------------------
-// Statement stubs (diisi Part 3 / Control Flow)
-// -----------------------------------------------
-ASTNode* SemanticAnalyzer::visitAssignStatement(ParseTreeNode* n) {
-    ASTNode* ast = makeAST(AST_ASSIGN);
-    // children: <variable> becomes <expression>
-    for (auto* c : n->children) {
-        if (isNT(c, "<variable>") || isNT(c, "<component-variable>"))
-            ast->add(visitVariable(c));
-        else if (isNT(c, "<expression>"))
-            ast->add(visitExpression(c));
-    }
-    return ast;
-}
+// Bagian 3 / Control Flow (INI IMPLEMENTASI BAGIAN LU WAN)
+// ASTNode* SemanticAnalyzer::visitAssignStatement(ParseTreeNode* n) {
+//     ASTNode* ast = makeAST(AST_ASSIGN);
+//     for (auto* c : n->children) {
+//         if (isNT(c, "<variable>") || isNT(c, "<component-variable>"))
+//             ast->add(visitVariable(c));
+//         else if (isNT(c, "<expression>"))
+//             ast->add(visitExpression(c));
+//     }
+//     return ast;
+// }
 
-ASTNode* SemanticAnalyzer::visitIfStatement(ParseTreeNode* n) {
-    ASTNode* ast = makeAST(AST_IF);
-    for (auto* c : n->children) {
-        if (isTok(c, "ifsy") || isTok(c, "thensy") || isTok(c, "elsesy")) continue;
-        if (isNT(c, "<expression>"))        ast->add(visitExpression(c));
-        else                                ast->add(visitStatement(c));
-    }
-    return ast;
-}
+// ASTNode* SemanticAnalyzer::visitIfStatement(ParseTreeNode* n) {
+//     ASTNode* ast = makeAST(AST_IF);
+//     for (auto* c : n->children) {
+//         if (isTok(c, "ifsy") || isTok(c, "thensy") || isTok(c, "elsesy")) continue;
+//         if (isNT(c, "<expression>"))        ast->add(visitExpression(c));
+//         else                                ast->add(visitStatement(c));
+//     }
+//     return ast;
+// }
 
-ASTNode* SemanticAnalyzer::visitWhileStatement(ParseTreeNode* n) {
-    ASTNode* ast = makeAST(AST_WHILE);
-    for (auto* c : n->children) {
-        if (isTok(c, "whilesy") || isTok(c, "dosy") || isTok(c, "semicolon")) continue;
-        if (isNT(c, "<expression>"))          ast->add(visitExpression(c));
-        else if (isNT(c, "<compound-statement>")) ast->add(visitCompoundStatement(c));
-    }
-    return ast;
-}
+// ASTNode* SemanticAnalyzer::visitWhileStatement(ParseTreeNode* n) {
+//     ASTNode* ast = makeAST(AST_WHILE);
+//     for (auto* c : n->children) {
+//         if (isTok(c, "whilesy") || isTok(c, "dosy") || isTok(c, "semicolon")) continue;
+//         if (isNT(c, "<expression>"))          ast->add(visitExpression(c));
+//         else if (isNT(c, "<compound-statement>")) ast->add(visitCompoundStatement(c));
+//     }
+//     return ast;
+// }
 
-ASTNode* SemanticAnalyzer::visitForStatement(ParseTreeNode* n) {
-    ASTNode* ast = makeAST(AST_FOR);
-    for (auto* c : n->children) {
-        if (isTok(c, "forsy") || isTok(c, "becomes") ||
-            isTok(c, "tosy") || isTok(c, "downtosy") ||
-            isTok(c, "dosy") || isTok(c, "semicolon")) continue;
-        if (isTok(c, "ident")) {
-            ASTNode* v = makeAST(AST_VAR, tokVal(c));
-            int idx = symtab.lookup(tokVal(c));
-            if (idx >= 0) { v->tabIndex = idx; v->typeCode = symtab.tab[idx].type; }
-            ast->add(v);
-        } else if (isNT(c, "<expression>"))
-            ast->add(visitExpression(c));
-        else if (isNT(c, "<compound-statement>"))
-            ast->add(visitCompoundStatement(c));
-    }
-    return ast;
-}
+// ASTNode* SemanticAnalyzer::visitForStatement(ParseTreeNode* n) {
+//     ASTNode* ast = makeAST(AST_FOR);
+//     for (auto* c : n->children) {
+//         if (isTok(c, "forsy") || isTok(c, "becomes") ||
+//             isTok(c, "tosy") || isTok(c, "downtosy") ||
+//             isTok(c, "dosy") || isTok(c, "semicolon")) continue;
+//         if (isTok(c, "ident")) {
+//             ASTNode* v = makeAST(AST_VAR, tokVal(c));
+//             int idx = symtab.lookup(tokVal(c));
+//             if (idx >= 0) { v->tabIndex = idx; v->typeCode = symtab.tab[idx].type; }
+//             ast->add(v);
+//         } else if (isNT(c, "<expression>"))
+//             ast->add(visitExpression(c));
+//         else if (isNT(c, "<compound-statement>"))
+//             ast->add(visitCompoundStatement(c));
+//     }
+//     return ast;
+// }
 
-ASTNode* SemanticAnalyzer::visitRepeatStatement(ParseTreeNode* n) {
-    ASTNode* ast = makeAST(AST_REPEAT);
-    for (auto* c : n->children) {
-        if (isTok(c, "repeatsy") || isTok(c, "untilsy")) continue;
-        if (isNT(c, "<statement-list>"))  ast->add(visitStatementList(c));
-        else if (isNT(c, "<expression>")) ast->add(visitExpression(c));
-    }
-    return ast;
-}
+// ASTNode* SemanticAnalyzer::visitRepeatStatement(ParseTreeNode* n) {
+//     ASTNode* ast = makeAST(AST_REPEAT);
+//     for (auto* c : n->children) {
+//         if (isTok(c, "repeatsy") || isTok(c, "untilsy")) continue;
+//         if (isNT(c, "<statement-list>"))  ast->add(visitStatementList(c));
+//         else if (isNT(c, "<expression>")) ast->add(visitExpression(c));
+//     }
+//     return ast;
+// }
 
-ASTNode* SemanticAnalyzer::visitCaseStatement(ParseTreeNode* n) {
-    ASTNode* ast = makeAST(AST_CASE);
-    for (auto* c : n->children) {
-        if (isTok(c, "casesy") || isTok(c, "ofsy") || isTok(c, "endsy")) continue;
-        if (isNT(c, "<expression>"))   ast->add(visitExpression(c));
-        else if (isNT(c, "<case-block>")) {
-            ASTNode* cb = makeAST(AST_CASE_BLOCK);
-            for (auto* cc : c->children) {
-                if (isTok(cc, "colon") || isTok(cc, "comma") || isTok(cc, "semicolon")) continue;
-                if (isNT(cc, "<constant>")) {
-                    ASTNode* cst = makeAST(AST_INT_LIT, std::to_string(evalConstant(cc)));
-                    cst->typeCode = typeOfConstant(cc);
-                    cb->add(cst);
-                } else cb->add(visitStatement(cc));
-            }
-            ast->add(cb);
-        }
-    }
-    return ast;
-}
+// ASTNode* SemanticAnalyzer::visitCaseStatement(ParseTreeNode* n) {
+//     ASTNode* ast = makeAST(AST_CASE);
+//     for (auto* c : n->children) {
+//         if (isTok(c, "casesy") || isTok(c, "ofsy") || isTok(c, "endsy")) continue;
+//         if (isNT(c, "<expression>"))   ast->add(visitExpression(c));
+//         else if (isNT(c, "<case-block>")) {
+//             ASTNode* cb = makeAST(AST_CASE_BLOCK);
+//             for (auto* cc : c->children) {
+//                 if (isTok(cc, "colon") || isTok(cc, "comma") || isTok(cc, "semicolon")) continue;
+//                 if (isNT(cc, "<constant>")) {
+//                     ASTNode* cst = makeAST(AST_INT_LIT, std::to_string(evalConstant(cc)));
+//                     cst->typeCode = typeOfConstant(cc);
+//                     cb->add(cst);
+//                 } else cb->add(visitStatement(cc));
+//             }
+//             ast->add(cb);
+//         }
+//     }
+//     return ast;
+// }
 
-ASTNode* SemanticAnalyzer::visitProcCall(ParseTreeNode* n) {
-    ASTNode* ast = makeAST(AST_PROC_CALL);
-    for (auto* c : n->children) {
-        if (isTok(c, "ident")) {
-            ast->value = tokVal(c);
-            int idx = symtab.lookup(tokVal(c));
-            if (idx >= 0) ast->tabIndex = idx;
-        } else if (isNT(c, "<parameter-list>")) {
-            for (auto* p : c->children) {
-                if (isTok(p, "comma")) continue;
-                if (isNT(p, "<expression>")) ast->add(visitExpression(p));
-            }
-        }
-    }
-    return ast;
-}
+// ASTNode* SemanticAnalyzer::visitProcCall(ParseTreeNode* n) {
+//     ASTNode* ast = makeAST(AST_PROC_CALL);
+//     for (auto* c : n->children) {
+//         if (isTok(c, "ident")) {
+//             ast->value = tokVal(c);
+//             int idx = symtab.lookup(tokVal(c));
+//             if (idx >= 0) ast->tabIndex = idx;
+//         } else if (isNT(c, "<parameter-list>")) {
+//             for (auto* p : c->children) {
+//                 if (isTok(p, "comma")) continue;
+//                 if (isNT(p, "<expression>")) ast->add(visitExpression(p));
+//             }
+//         }
+//     }
+//     return ast;
+// }
 
-// -----------------------------------------------
-// Ekspresi: stubs minimal (Part 3 mengisi implementasi penuh)
-// -----------------------------------------------
-ASTNode* SemanticAnalyzer::visitExpression(ParseTreeNode* n) {
-    if (!n) return makeAST(AST_INT_LIT, "0");
-    // Jika hanya punya satu child yang simple-expression, teruskan
-    if (n->children.size() == 1 && isNT(n->children[0], "<simple-expression>"))
-        return visitSimpleExpression(n->children[0]);
-    // Ada relational operator
-    ASTNode* ast = makeAST(AST_BINOP);
-    for (auto* c : n->children) {
-        if (isNT(c, "<simple-expression>"))    ast->add(visitSimpleExpression(c));
-        else if (isNT(c, "<relational-operator>")) {
-            for (auto* op : c->children) ast->op = tokTy(op);
-        }
-    }
-    ast->typeCode = T_BOOLEAN;
-    return ast;
-}
+// // -----------------------------------------------
+// // Ekspresi: stubs minimal (Part 3 mengisi implementasi penuh)
+// // -----------------------------------------------
+// ASTNode* SemanticAnalyzer::visitExpression(ParseTreeNode* n) {
+//     if (!n) return makeAST(AST_INT_LIT, "0");
+//     // Jika hanya punya satu child yang simple-expression, teruskan
+//     if (n->children.size() == 1 && isNT(n->children[0], "<simple-expression>"))
+//         return visitSimpleExpression(n->children[0]);
+//     // Ada relational operator
+//     ASTNode* ast = makeAST(AST_BINOP);
+//     for (auto* c : n->children) {
+//         if (isNT(c, "<simple-expression>"))    ast->add(visitSimpleExpression(c));
+//         else if (isNT(c, "<relational-operator>")) {
+//             for (auto* op : c->children) ast->op = tokTy(op);
+//         }
+//     }
+//     ast->typeCode = T_BOOLEAN;
+//     return ast;
+// }
 
-ASTNode* SemanticAnalyzer::visitSimpleExpression(ParseTreeNode* n) {
-    if (n->children.empty()) return makeAST(AST_INT_LIT, "0");
-    if (n->children.size() == 1 && isNT(n->children[0], "<term>"))
-        return visitTerm(n->children[0]);
+// ASTNode* SemanticAnalyzer::visitSimpleExpression(ParseTreeNode* n) {
+//     if (n->children.empty()) return makeAST(AST_INT_LIT, "0");
+//     if (n->children.size() == 1 && isNT(n->children[0], "<term>"))
+//         return visitTerm(n->children[0]);
 
-    ASTNode* ast = makeAST(AST_BINOP);
-    std::string curOp;
-    ASTNode* left = nullptr;
-    for (auto* c : n->children) {
-        if (isTok(c, "plus") || isTok(c, "minus") || isTok(c, "orsy")) {
-            curOp = tokTy(c); continue;
-        }
-        if (isNT(c, "<additive-operator>")) {
-            for (auto* op : c->children) curOp = tokTy(op);
-            continue;
-        }
-        if (isNT(c, "<term>")) {
-            ASTNode* t = visitTerm(c);
-            if (!left) { left = t; }
-            else {
-                ast->op = curOp;
-                ast->add(left);
-                ast->add(t);
-                ast->typeCode = T_INTEGER;
-                left = ast;
-                ast = makeAST(AST_BINOP);
-            }
-        }
-    }
-    if (left && ast->children.empty()) return left;
-    return ast;
-}
+//     ASTNode* ast = makeAST(AST_BINOP);
+//     std::string curOp;
+//     ASTNode* left = nullptr;
+//     for (auto* c : n->children) {
+//         if (isTok(c, "plus") || isTok(c, "minus") || isTok(c, "orsy")) {
+//             curOp = tokTy(c); continue;
+//         }
+//         if (isNT(c, "<additive-operator>")) {
+//             for (auto* op : c->children) curOp = tokTy(op);
+//             continue;
+//         }
+//         if (isNT(c, "<term>")) {
+//             ASTNode* t = visitTerm(c);
+//             if (!left) { left = t; }
+//             else {
+//                 ast->op = curOp;
+//                 ast->add(left);
+//                 ast->add(t);
+//                 ast->typeCode = T_INTEGER;
+//                 left = ast;
+//                 ast = makeAST(AST_BINOP);
+//             }
+//         }
+//     }
+//     if (left && ast->children.empty()) return left;
+//     return ast;
+// }
 
-ASTNode* SemanticAnalyzer::visitTerm(ParseTreeNode* n) {
-    if (n->children.size() == 1 && isNT(n->children[0], "<factor>"))
-        return visitFactor(n->children[0]);
+// ASTNode* SemanticAnalyzer::visitTerm(ParseTreeNode* n) {
+//     if (n->children.size() == 1 && isNT(n->children[0], "<factor>"))
+//         return visitFactor(n->children[0]);
 
-    ASTNode* ast = makeAST(AST_BINOP);
-    std::string curOp;
-    ASTNode* left = nullptr;
-    for (auto* c : n->children) {
-        if (isNT(c, "<multiplicative-operator>")) {
-            for (auto* op : c->children) curOp = tokTy(op);
-            continue;
-        }
-        if (isTok(c, "times") || isTok(c, "rdiv") || isTok(c, "idiv") ||
-            isTok(c, "imod") || isTok(c, "andsy")) {
-            curOp = tokTy(c); continue;
-        }
-        if (isNT(c, "<factor>")) {
-            ASTNode* f = visitFactor(c);
-            if (!left) { left = f; }
-            else {
-                ast->op = curOp;
-                ast->add(left);
-                ast->add(f);
-                ast->typeCode = T_INTEGER;
-                left = ast;
-                ast = makeAST(AST_BINOP);
-            }
-        }
-    }
-    if (left && ast->children.empty()) return left;
-    return ast;
-}
+//     ASTNode* ast = makeAST(AST_BINOP);
+//     std::string curOp;
+//     ASTNode* left = nullptr;
+//     for (auto* c : n->children) {
+//         if (isNT(c, "<multiplicative-operator>")) {
+//             for (auto* op : c->children) curOp = tokTy(op);
+//             continue;
+//         }
+//         if (isTok(c, "times") || isTok(c, "rdiv") || isTok(c, "idiv") ||
+//             isTok(c, "imod") || isTok(c, "andsy")) {
+//             curOp = tokTy(c); continue;
+//         }
+//         if (isNT(c, "<factor>")) {
+//             ASTNode* f = visitFactor(c);
+//             if (!left) { left = f; }
+//             else {
+//                 ast->op = curOp;
+//                 ast->add(left);
+//                 ast->add(f);
+//                 ast->typeCode = T_INTEGER;
+//                 left = ast;
+//                 ast = makeAST(AST_BINOP);
+//             }
+//         }
+//     }
+//     if (left && ast->children.empty()) return left;
+//     return ast;
+// }
 
-ASTNode* SemanticAnalyzer::visitFactor(ParseTreeNode* n) {
-    for (auto* c : n->children) {
-        if (isTok(c, "intcon")) {
-            ASTNode* a = makeAST(AST_INT_LIT, tokVal(c));
-            a->typeCode = T_INTEGER;
-            return a;
-        }
-        if (isTok(c, "realcon")) {
-            ASTNode* a = makeAST(AST_REAL_LIT, tokVal(c));
-            a->typeCode = T_REAL;
-            return a;
-        }
-        if (isTok(c, "charcon")) {
-            ASTNode* a = makeAST(AST_CHAR_LIT, tokVal(c));
-            a->typeCode = T_CHAR;
-            return a;
-        }
-        if (isTok(c, "string")) {
-            ASTNode* a = makeAST(AST_STR_LIT, tokVal(c));
-            a->typeCode = T_STRING;
-            return a;
-        }
-        if (isTok(c, "ident")) {
-            ASTNode* a = makeAST(AST_VAR, tokVal(c));
-            int idx = symtab.lookup(tokVal(c));
-            if (idx >= 0) { a->tabIndex = idx; a->typeCode = symtab.tab[idx].type; }
-            else addError("Identifier tidak dideklarasikan: " + tokVal(c));
-            return a;
-        }
-        if (isTok(c, "notsy")) {
-            ASTNode* a = makeAST(AST_UNOP); a->op = "not";
-            a->typeCode = T_BOOLEAN;
-            a->add(visitFactor(n->children.back() == c ? n : c));
-            return a;
-        }
-        if (isNT(c, "<expression>"))           return visitExpression(c);
-        if (isNT(c, "<variable>"))             return visitVariable(c);
-        if (isNT(c, "<procedure/function-call>")) return visitProcCall(c);
-    }
-    return makeAST(AST_INT_LIT, "0");
-}
+// ASTNode* SemanticAnalyzer::visitFactor(ParseTreeNode* n) {
+//     for (auto* c : n->children) {
+//         if (isTok(c, "intcon")) {
+//             ASTNode* a = makeAST(AST_INT_LIT, tokVal(c));
+//             a->typeCode = T_INTEGER;
+//             return a;
+//         }
+//         if (isTok(c, "realcon")) {
+//             ASTNode* a = makeAST(AST_REAL_LIT, tokVal(c));
+//             a->typeCode = T_REAL;
+//             return a;
+//         }
+//         if (isTok(c, "charcon")) {
+//             ASTNode* a = makeAST(AST_CHAR_LIT, tokVal(c));
+//             a->typeCode = T_CHAR;
+//             return a;
+//         }
+//         if (isTok(c, "string")) {
+//             ASTNode* a = makeAST(AST_STR_LIT, tokVal(c));
+//             a->typeCode = T_STRING;
+//             return a;
+//         }
+//         if (isTok(c, "ident")) {
+//             ASTNode* a = makeAST(AST_VAR, tokVal(c));
+//             int idx = symtab.lookup(tokVal(c));
+//             if (idx >= 0) { a->tabIndex = idx; a->typeCode = symtab.tab[idx].type; }
+//             else addError("Identifier tidak dideklarasikan: " + tokVal(c));
+//             return a;
+//         }
+//         if (isTok(c, "notsy")) {
+//             ASTNode* a = makeAST(AST_UNOP); a->op = "not";
+//             a->typeCode = T_BOOLEAN;
+//             a->add(visitFactor(n->children.back() == c ? n : c));
+//             return a;
+//         }
+//         if (isNT(c, "<expression>"))           return visitExpression(c);
+//         if (isNT(c, "<variable>"))             return visitVariable(c);
+//         if (isNT(c, "<procedure/function-call>")) return visitProcCall(c);
+//     }
+//     return makeAST(AST_INT_LIT, "0");
+// }
 
-ASTNode* SemanticAnalyzer::visitVariable(ParseTreeNode* n) {
-    ASTNode* ast = makeAST(AST_VAR);
-    for (auto* c : n->children) {
-        if (isTok(c, "ident")) {
-            ast->value = tokVal(c);
-            int idx = symtab.lookup(tokVal(c));
-            if (idx >= 0) { ast->tabIndex = idx; ast->typeCode = symtab.tab[idx].type; }
-            else addError("Variabel tidak dideklarasikan: " + tokVal(c));
-        } else if (isNT(c, "<component-variable>")) {
-            return visitVariable(c);
-        }
-    }
-    return ast;
-}
+// ASTNode* SemanticAnalyzer::visitVariable(ParseTreeNode* n) {
+//     ASTNode* ast = makeAST(AST_VAR);
+//     for (auto* c : n->children) {
+//         if (isTok(c, "ident")) {
+//             ast->value = tokVal(c);
+//             int idx = symtab.lookup(tokVal(c));
+//             if (idx >= 0) { ast->tabIndex = idx; ast->typeCode = symtab.tab[idx].type; }
+//             else addError("Variabel tidak dideklarasikan: " + tokVal(c));
+//         } else if (isNT(c, "<component-variable>")) {
+//             return visitVariable(c);
+//         }
+//     }
+//     return ast;
+// }
 
-// -----------------------------------------------
 // Output hasil
-// -----------------------------------------------
 void SemanticAnalyzer::printResults(std::ostream& out) const {
     symtab.printTab(out);
     symtab.printBtab(out);

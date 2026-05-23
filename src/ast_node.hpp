@@ -4,9 +4,7 @@
 #include <iostream>
 #include <fstream>
 
-// =============================================
 // Jenis node AST
-// =============================================
 enum ASTKind {
     // Program structure
     AST_PROGRAM, AST_BLOCK, AST_DECL_PART,
@@ -26,10 +24,8 @@ enum ASTKind {
     AST_STR_LIT, AST_BOOL_LIT,
 };
 
-// =============================================
 // Kode tipe dasar (sesuai Lampiran B contoh)
-// =============================================
-const int T_NONE    = 0;  // void / belum diketahui
+const int T_NONE    = 0;
 const int T_INTEGER = 1;
 const int T_REAL    = 2;
 const int T_BOOLEAN = 3;
@@ -38,16 +34,14 @@ const int T_ARRAY   = 5;
 const int T_RECORD  = 6;
 const int T_STRING  = 7;
 
-// =============================================
 // Kelas objek identifier
-// =============================================
 const int OBJ_CONST    = 0;
 const int OBJ_VARIABLE = 1;
 const int OBJ_TYPE     = 2;
 const int OBJ_PROC     = 3;
 const int OBJ_FUNC     = 4;
 const int OBJ_PROGRAM  = 5;
-const int OBJ_KEYWORD  = 6;  // reserved word (placeholder)
+const int OBJ_KEYWORD  = 6;
 
 // nama tipe untuk output
 inline std::string typeName(int tc) {
@@ -76,19 +70,17 @@ inline std::string objName(int obj) {
     }
 }
 
-// =============================================
 // Node AST
-// =============================================
 struct ASTNode {
     ASTKind kind;
-    std::string value;   // lexeme untuk literal / nama identifier
-    std::string op;      // operator untuk BinOp / UnOp
+    std::string value;
+    std::string op;
 
     // Anotasi semantik (diisi saat semantic analysis)
-    int typeCode = T_NONE;  // kode tipe hasil
-    int typeRef  = 0;       // ref ke atab/btab untuk tipe komposit
-    int tabIndex = -1;      // indeks ke tab
-    int level    = 0;       // lexical level
+    int typeCode = T_NONE;
+    int typeRef  = 0;
+    int tabIndex = -1;
+    int level    = 0;
 
     std::vector<ASTNode*> children;
 

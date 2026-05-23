@@ -38,17 +38,15 @@ struct BtabEntry {
         : last(last_), lpar(lpar_), psze(psze_), vsze(vsze_) {}
 };
 
-// =============================================
-// Entry tabel array (atab)
-// =============================================
+// Entry tabel array
 struct AtabEntry {
-    int xtyp;  // tipe indeks
-    int etyp;  // tipe elemen
-    int eref;  // ref ke atab/btab jika elemen komposit
-    int low;   // batas bawah
-    int high;  // batas atas
-    int elsz;  // ukuran satu elemen
-    int size;  // total ukuran
+    int xtyp;
+    int etyp;
+    int eref;
+    int low;
+    int high;
+    int elsz;
+    int size;
 
     AtabEntry(int xtyp_, int etyp_, int eref_, int low_, int high_, int elsz_)
         : xtyp(xtyp_), etyp(etyp_), eref(eref_),
@@ -57,18 +55,16 @@ struct AtabEntry {
     }
 };
 
-// =============================================
 // Symbol Table
-// =============================================
 class SymbolTable {
 public:
     std::vector<TabEntry>  tab;
     std::vector<BtabEntry> btab;
     std::vector<AtabEntry> atab;
 
-    int curLevel;   // lexical level sekarang
-    int curBlock;   // indeks btab dari blok aktif
-    std::vector<int> display; // display[level] = indeks btab
+    int curLevel;
+    int curBlock;
+    std::vector<int> display;
 
     // Indeks pertama entry user (setelah semua predefined)
     static const int FIRST_USER = 34;
@@ -83,7 +79,6 @@ public:
               int ref, int nrm, int adr);
 
     // Lookup dari scope terdalam ke terluar (case-insensitive)
-    // Return indeks di tab, -1 jika tidak ditemukan
     int lookup(const std::string& id) const;
 
     // Buka blok baru (prosedur/fungsi/record), kembalikan indeks btab
