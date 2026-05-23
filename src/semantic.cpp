@@ -126,7 +126,6 @@ ASTNode* SemanticAnalyzer::visitStatementList(ParseTreeNode* n) {
 ASTNode* SemanticAnalyzer::visitStatement(ParseTreeNode* n) {
     if (!n) return makeAST(AST_EMPTY);
 
-    // Jalur 1: Jika simpul n adalah jenis statement langsung (tanpa bungkus <statement>)
     if (isNT(n, "<assignment-statement>")) return visitAssignStatement(n);
     if (isNT(n, "<if-statement>"))         return visitIfStatement(n);
     if (isNT(n, "<while-statement>"))      return visitWhileStatement(n);
@@ -137,23 +136,18 @@ ASTNode* SemanticAnalyzer::visitStatement(ParseTreeNode* n) {
     if (isNT(n, "<compound-statement>"))   return visitCompoundStatement(n);
     if (isNT(n, "<empty-statement>"))      return makeAST(AST_EMPTY);
 
-    // Jalur 2: Jika simpul n adalah <statement> yang membungkus jenis statement di bawahnya
     if (isNT(n, "<statement>") && !n->children.empty()) {
-        return visitStatement(n->children[0]); // Rekursi ke anak pertamanya
+        return visitStatement(n->children[0]); 
     }
 
     return makeAST(AST_EMPTY);
 }
 
-// -----------------------------------------------
-// Statement stubs (diisi Part 3 / Control Flow)
-// -----------------------------------------------
 ASTNode* SemanticAnalyzer::visitAssignStatement(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_ASSIGN);
     ASTNode* targetAST = nullptr;
     ASTNode* valueAST = nullptr;
 
-    // Menelusuri variabel target dan ekspresi nilai
     for (auto* c : n->children) {
         if (isNT(c, "<variable>") || isNT(c, "<component-variable>")) {
             targetAST = visitVariable(c);
@@ -164,15 +158,11 @@ ASTNode* SemanticAnalyzer::visitAssignStatement(ParseTreeNode* n) {
         }
     }
 
-    // VALIDASI SEMANTIK: Kompatibilitas Tipe Assignment
     if (targetAST && valueAST) {
         if (targetAST->typeCode != T_NONE && valueAST->typeCode != T_NONE) {
             if (targetAST->typeCode == valueAST->typeCode) {
-                // Tipe sama, valid
             } else if (targetAST->typeCode == T_REAL && valueAST->typeCode == T_INTEGER) {
-                // Integer otomatis dipromosikan ke Real, valid
             } else {
-                // Menggunakan std::to_string agar tidak bentrok dengan TokenType Lexer
                 addError("Type mismatch in assignment. Cannot assign type " + 
                          std::to_string(valueAST->typeCode) + " to type " + 
                          std::to_string(targetAST->typeCode));
@@ -186,19 +176,15 @@ ASTNode* SemanticAnalyzer::visitAssignStatement(ParseTreeNode* n) {
 ASTNode* SemanticAnalyzer::visitIfStatement(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_IF);
     for (auto* c : n->children) {
-        // Abaikan token keyword
         if (isTok(c, "ifsy") || isTok(c, "thensy") || isTok(c, "elsesy")) continue;
         
         if (isNT(c, "<expression>")) {
             ASTNode* condAST = visitExpression(c);
-            // VALIDASI SEMANTIK: Kondisi IF harus Boolean
             if (condAST && condAST->typeCode != T_NONE && condAST->typeCode != T_BOOLEAN) {
                 addError("Type mismatch in IF condition: expected Boolean");
             }
             if (condAST) ast->add(condAST);
         } else {
-            // Tangkap SEGALA bentuk statement (assignment, compound, for, dll)
-            // tanpa harus secara spesifik bernama "<statement>"
             ASTNode* stmtAST = visitStatement(c);
             if (stmtAST) ast->add(stmtAST);
         }
@@ -213,7 +199,6 @@ ASTNode* SemanticAnalyzer::visitWhileStatement(ParseTreeNode* n) {
         
         if (isNT(c, "<expression>")) {
             ASTNode* condAST = visitExpression(c);
-            // VALIDASI SEMANTIK: Kondisi WHILE harus Boolean
             if (condAST && condAST->typeCode != T_NONE && condAST->typeCode != T_BOOLEAN) {
                 addError("Type mismatch in WHILE condition: expected Boolean");
             }
@@ -241,7 +226,6 @@ ASTNode* SemanticAnalyzer::visitForStatement(ParseTreeNode* n) {
             if (idx >= 0) { 
                 v->tabIndex = idx; 
                 v->typeCode = symtab.tab[idx].type; 
-                // VALIDASI SEMANTIK: Variabel counter wajib bertipe Integer
                 if (symtab.tab[idx].type != T_INTEGER) {
                     addError("FOR counter variable must be Integer: " + varName);
                 }
@@ -251,7 +235,6 @@ ASTNode* SemanticAnalyzer::visitForStatement(ParseTreeNode* n) {
             ast->add(v);
         } else if (isNT(c, "<expression>")) {
             ASTNode* exprAST = visitExpression(c);
-            // VALIDASI SEMANTIK: Batas range atas dan bawah harus Integer
             if (exprAST && exprAST->typeCode != T_NONE && exprAST->typeCode != T_INTEGER) {
                 addError("FOR range expression must evaluate to Integer");
             }
@@ -274,7 +257,6 @@ ASTNode* SemanticAnalyzer::visitRepeatStatement(ParseTreeNode* n) {
             if (stmtListAST) ast->add(stmtListAST);
         } else if (isNT(c, "<expression>")) {
             ASTNode* condAST = visitExpression(c);
-            // VALIDASI SEMANTIK: Kondisi UNTIL harus Boolean
             if (condAST && condAST->typeCode != T_NONE && condAST->typeCode != T_BOOLEAN) {
                 addError("Type mismatch in REPEAT-UNTIL condition: expected Boolean");
             }
@@ -303,7 +285,6 @@ ASTNode* SemanticAnalyzer::visitCaseStatement(ParseTreeNode* n) {
                     ASTNode* cst = makeAST(AST_INT_LIT, std::to_string(evalConstant(cc)));
                     cst->typeCode = typeOfConstant(cc);
                     
-                    // VALIDASI SEMANTIK: Tipe konstanta cabang harus kompatibel dengan ekspresi CASE utama
                     if (condAST && condAST->typeCode != T_NONE && cst->typeCode != T_NONE) {
                         if (condAST->typeCode != cst->typeCode) {
                             addError("Case label constant type mismatch with case expression");
@@ -340,10 +321,8 @@ ASTNode* SemanticAnalyzer::visitProcCall(ParseTreeNode* n) {
 
 ASTNode* SemanticAnalyzer::visitExpression(ParseTreeNode* n) {
     if (!n) return makeAST(AST_INT_LIT, "0");
-    // Jika hanya punya satu child yang simple-expression, teruskan
     if (n->children.size() == 1 && isNT(n->children[0], "<simple-expression>"))
         return visitSimpleExpression(n->children[0]);
-    // Ada relational operator
     ASTNode* ast = makeAST(AST_BINOP);
     for (auto* c : n->children) {
         if (isNT(c, "<simple-expression>"))    ast->add(visitSimpleExpression(c));
