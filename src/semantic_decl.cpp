@@ -2,20 +2,14 @@
 #include <sstream>
 #include <stdexcept>
 
-// ===================================================================
-// CONST DECLARATION
-// <const-declaration>: constsy (ident eql <constant> semicolon)+
-// ===================================================================
 ASTNode* SemanticAnalyzer::visitConstDeclaration(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_CONST_DECL);
 
-    // Skip child[0] = constsy, lalu iterasi grup (ident eql constant semi)
     int i = 1;
     while (i < (int)n->children.size()) {
         ParseTreeNode* identNode = nullptr;
         ParseTreeNode* constNode = nullptr;
 
-        // Kumpulkan ident dan <constant> dari grup ini
         while (i < (int)n->children.size()) {
             auto* c = n->children[i];
             if (isTok(c, "ident"))        { identNode = c; i++; }
@@ -29,7 +23,6 @@ ASTNode* SemanticAnalyzer::visitConstDeclaration(ParseTreeNode* n) {
 
         std::string name = tokVal(identNode);
 
-        // Cek redeklakarasi di scope yang sama
         int existing = symtab.lookup(name);
         if (existing >= (int)symtab.FIRST_USER && symtab.tab[existing].lev == symtab.curLevel) {
             addError("Redeklakarasi identifier: " + name);
@@ -41,7 +34,6 @@ ASTNode* SemanticAnalyzer::visitConstDeclaration(ParseTreeNode* n) {
 
         int idx = symtab.enter(name, OBJ_CONST, tc, 0, 1, val);
 
-        // Buat node AST
         ASTNode* cAst = makeAST(AST_CONST_DECL, name);
         cAst->typeCode = tc;
         cAst->tabIndex = idx;
@@ -51,14 +43,11 @@ ASTNode* SemanticAnalyzer::visitConstDeclaration(ParseTreeNode* n) {
     return ast;
 }
 
-// ===================================================================
-// TYPE DECLARATION
-// <type-declaration>: typesy (ident eql <type> semicolon)+
-// ===================================================================
+
 ASTNode* SemanticAnalyzer::visitTypeDeclaration(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_TYPE_DECL);
 
-    int i = 1; // skip typesy
+    int i = 1;
     while (i < (int)n->children.size()) {
         ParseTreeNode* identNode = nullptr;
         ParseTreeNode* typeNode  = nullptr;
@@ -76,7 +65,6 @@ ASTNode* SemanticAnalyzer::visitTypeDeclaration(ParseTreeNode* n) {
 
         std::string name = tokVal(identNode);
 
-        // Cek redeklakarasi
         int existing = symtab.lookup(name);
         if (existing >= (int)symtab.FIRST_USER && symtab.tab[existing].lev == symtab.curLevel) {
             addError("Redeklakarasi tipe: " + name);
@@ -96,14 +84,10 @@ ASTNode* SemanticAnalyzer::visitTypeDeclaration(ParseTreeNode* n) {
     return ast;
 }
 
-// ===================================================================
-// VAR DECLARATION
-// <var-declaration>: varsy (<identifier-list> colon <type> semicolon)+
-// ===================================================================
 ASTNode* SemanticAnalyzer::visitVarDeclaration(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_VAR_DECL);
 
-    int i = 1; // skip varsy
+    int i = 1;
     while (i < (int)n->children.size()) {
         ParseTreeNode* idListNode = nullptr;
         ParseTreeNode* typeNode   = nullptr;
@@ -122,19 +106,16 @@ ASTNode* SemanticAnalyzer::visitVarDeclaration(ParseTreeNode* n) {
         auto [tc, ref] = visitType(typeNode);
         int sz = symtab.typeSize(tc, ref);
 
-        // Iterasi setiap identifier dalam daftar
         for (auto* idChild : idListNode->children) {
             if (!isTok(idChild, "ident")) continue;
             std::string name = tokVal(idChild);
 
-            // Cek redeklakarasi di scope yang sama
             int existing = symtab.lookup(name);
             if (existing >= (int)symtab.FIRST_USER && symtab.tab[existing].lev == symtab.curLevel) {
                 addError("Redeklakarasi variabel: " + name);
                 continue;
             }
 
-            // adr = offset dalam stack frame (vsze sekarang)
             int offset = symtab.btab[symtab.curBlock].vsze;
             int idx = symtab.enter(name, OBJ_VARIABLE, tc, ref, 1, offset);
             symtab.btab[symtab.curBlock].vsze += sz;
@@ -150,9 +131,6 @@ ASTNode* SemanticAnalyzer::visitVarDeclaration(ParseTreeNode* n) {
     return ast;
 }
 
-// ===================================================================
-// SUBPROGRAM DECLARATION: dispatch ke procedure / function
-// ===================================================================
 ASTNode* SemanticAnalyzer::visitSubprogramDeclaration(ParseTreeNode* n) {
     for (auto* c : n->children) {
         if (isNT(c, "<procedure-declaration>")) return visitProcedureDeclaration(c);
@@ -161,10 +139,6 @@ ASTNode* SemanticAnalyzer::visitSubprogramDeclaration(ParseTreeNode* n) {
     return makeAST(AST_PROC_DECL);
 }
 
-// ===================================================================
-// PROCEDURE DECLARATION
-// proceduresy ident (param-list)? semicolon block semicolon
-// ===================================================================
 ASTNode* SemanticAnalyzer::visitProcedureDeclaration(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_PROC_DECL);
 
@@ -172,22 +146,18 @@ ASTNode* SemanticAnalyzer::visitProcedureDeclaration(ParseTreeNode* n) {
     for (auto* c : n->children)
         if (isTok(c, "ident")) { name = tokVal(c); break; }
 
-    // Cek redeklakarasi
     int existing = symtab.lookup(name);
     if (existing >= (int)symtab.FIRST_USER && symtab.tab[existing].lev == symtab.curLevel)
         addError("Redeklakarasi prosedur: " + name);
 
-    // Tentukan indeks btab untuk blok prosedur ini
     int bIdx = (int)symtab.btab.size();
     int idx = symtab.enter(name, OBJ_PROC, T_NONE, bIdx, 1, 0);
     ast->value    = name;
     ast->tabIndex = idx;
     ast->level    = symtab.curLevel;
 
-    // Buka blok untuk prosedur
     symtab.openBlock();
 
-    // Parameter formal
     int lastParam = 0, psze = 0;
     for (auto* c : n->children) {
         if (isNT(c, "<formal-parameter-list>"))
@@ -196,7 +166,6 @@ ASTNode* SemanticAnalyzer::visitProcedureDeclaration(ParseTreeNode* n) {
     symtab.btab[symtab.curBlock].lpar = lastParam;
     symtab.btab[symtab.curBlock].psze = psze;
 
-    // Block prosedur
     for (auto* c : n->children) {
         if (isNT(c, "<block>")) ast->add(visitBlock(c));
     }
@@ -205,18 +174,12 @@ ASTNode* SemanticAnalyzer::visitProcedureDeclaration(ParseTreeNode* n) {
     return ast;
 }
 
-// ===================================================================
-// FUNCTION DECLARATION
-// functionsy ident (param-list)? colon ident semicolon block semicolon
-// ===================================================================
 ASTNode* SemanticAnalyzer::visitFunctionDeclaration(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_FUNC_DECL);
 
     std::string name;
     std::string retTypeName;
 
-    // Ambil nama dan tipe return
-    // children: functionsy, ident(name), [param-list], colon, ident(retType), semi, block, semi
     bool foundName = false;
     for (auto* c : n->children) {
         if (isTok(c, "functionsy")) continue;
@@ -225,7 +188,6 @@ ASTNode* SemanticAnalyzer::visitFunctionDeclaration(ParseTreeNode* n) {
         else if (isTok(c, "colon"))           continue;
     }
 
-    // Resolve return type
     int retType = T_NONE;
     int retIdx = symtab.lookup(retTypeName);
     if (retIdx >= 0 && symtab.tab[retIdx].obj == OBJ_TYPE)
@@ -233,7 +195,6 @@ ASTNode* SemanticAnalyzer::visitFunctionDeclaration(ParseTreeNode* n) {
     else if (!retTypeName.empty())
         addError("Tipe return tidak dikenal: " + retTypeName);
 
-    // Cek redeklakarasi
     int existing = symtab.lookup(name);
     if (existing >= (int)symtab.FIRST_USER && symtab.tab[existing].lev == symtab.curLevel)
         addError("Redeklakarasi fungsi: " + name);
@@ -263,10 +224,6 @@ ASTNode* SemanticAnalyzer::visitFunctionDeclaration(ParseTreeNode* n) {
     return ast;
 }
 
-// ===================================================================
-// FORMAL PARAMETER LIST
-// lparent (param-group (semicolon param-group)*)? rparent
-// ===================================================================
 ASTNode* SemanticAnalyzer::visitFormalParameterList(ParseTreeNode* n,
                                                      int& lastParam, int& psze) {
     ASTNode* ast = makeAST(AST_PARAM_LIST);
@@ -274,14 +231,12 @@ ASTNode* SemanticAnalyzer::visitFormalParameterList(ParseTreeNode* n,
     for (auto* c : n->children) {
         if (!isNT(c, "<parameter-group>")) continue;
 
-        // <parameter-group>: <identifier-list> colon (ident | <array-type>)
         ParseTreeNode* idList = nullptr;
         int tc = T_NONE, ref = 0;
 
         for (auto* pc : c->children) {
             if (isNT(pc, "<identifier-list>"))  idList = pc;
             else if (isTok(pc, "ident")) {
-                // tipe parameter
                 int tIdx = symtab.lookup(tokVal(pc));
                 if (tIdx >= 0 && symtab.tab[tIdx].obj == OBJ_TYPE)
                     tc = symtab.tab[tIdx].type;
@@ -314,16 +269,11 @@ ASTNode* SemanticAnalyzer::visitFormalParameterList(ParseTreeNode* n,
     return ast;
 }
 
-// ===================================================================
-// RESOLVE TYPE dari node <type>
-// Kembalikan (typeCode, ref)
-// ===================================================================
 std::pair<int,int> SemanticAnalyzer::visitType(ParseTreeNode* n) {
     if (!n || n->children.empty()) return {T_NONE, 0};
 
     ParseTreeNode* child = n->children[0];
 
-    // Tipe bernama: ident(integer), ident(MyRecord), dsb
     if (isTok(child, "ident")) {
         std::string tname = tokVal(child);
         int idx = symtab.lookup(tname);
@@ -336,17 +286,12 @@ std::pair<int,int> SemanticAnalyzer::visitType(ParseTreeNode* n) {
             addError(tname + " bukan tipe data");
             return {T_NONE, 0};
         }
-        // Named type: kembalikan (type, ref ke definisi type di tab)
-        // Untuk named record/array, ref = e.ref (atab/btab)
         return {e.type, e.ref};
     }
 
-    // Array type
     if (isNT(child, "<array-type>")) return visitArrayType(child);
 
-    // Enumerated: (A, B, C) -> buat tipe integer (simplified)
     if (isNT(child, "<enumerated>")) {
-        // Setiap ident dalam enumerated = konstanta integer
         int i = 0;
         for (auto* ec : child->children) {
             if (!isTok(ec, "ident")) continue;
@@ -362,12 +307,10 @@ std::pair<int,int> SemanticAnalyzer::visitType(ParseTreeNode* n) {
         return {T_INTEGER, 0};
     }
 
-    // Subrange: <range> -> <constant> period period <constant>
     if (isNT(child, "<range>")) {
-        int tc = T_INTEGER;  // subrange default integer
+        int tc = T_INTEGER;
         if (!child->children.empty())
-            tc = typeOfConstant(child->children[0]);  // tipe dari batas bawah
-        // Cek batas bawah <= batas atas
+            tc = typeOfConstant(child->children[0]);
         if (child->children.size() >= 4) {
             int lo = evalConstant(child->children[0]);
             int hi = evalConstant(child->children[3]);
@@ -377,13 +320,11 @@ std::pair<int,int> SemanticAnalyzer::visitType(ParseTreeNode* n) {
         return {tc, 0};
     }
 
-    // Record type
     if (isNT(child, "<record-type>")) {
         int bIdx = symtab.openBlock();
-        int prevBlock = symtab.curBlock - 1; // blok sebelumnya
+        int prevBlock = symtab.curBlock - 1;
         (void)prevBlock;
 
-        // Proses field-list
         ParseTreeNode* fl = nullptr;
         for (auto* rc : child->children) {
             if (isNT(rc, "<field-list>")) { fl = rc; break; }
@@ -391,7 +332,6 @@ std::pair<int,int> SemanticAnalyzer::visitType(ParseTreeNode* n) {
         if (fl) {
             for (auto* fp : fl->children) {
                 if (!isNT(fp, "<field-part>")) continue;
-                // <field-part>: <identifier-list> colon <type>
                 ParseTreeNode* fidList = nullptr;
                 ParseTreeNode* ftype  = nullptr;
                 for (auto* fpc : fp->children) {
@@ -417,10 +357,6 @@ std::pair<int,int> SemanticAnalyzer::visitType(ParseTreeNode* n) {
     return {T_NONE, 0};
 }
 
-// ===================================================================
-// ARRAY TYPE
-// arraysy lbrack (range|ident) rbrack ofsy <type>
-// ===================================================================
 std::pair<int,int> SemanticAnalyzer::visitArrayType(ParseTreeNode* n) {
     int xtyp = T_INTEGER;
     int low  = 0, high = 0;
@@ -431,7 +367,6 @@ std::pair<int,int> SemanticAnalyzer::visitArrayType(ParseTreeNode* n) {
             isTok(c, "rbrack") || isTok(c, "ofsy")) continue;
 
         if (isNT(c, "<range>")) {
-            // <range>: <constant> period period <constant>
             if (c->children.size() >= 4) {
                 xtyp = typeOfConstant(c->children[0]);
                 low  = evalConstant(c->children[0]);
@@ -442,10 +377,9 @@ std::pair<int,int> SemanticAnalyzer::visitArrayType(ParseTreeNode* n) {
                     addError("Batas bawah array lebih besar dari batas atas");
             }
         } else if (isTok(c, "ident")) {
-            // Index berupa named type (e.g., Boolean)
             int tIdx = symtab.lookup(tokVal(c));
             if (tIdx >= 0) xtyp = symtab.tab[tIdx].type;
-            low = 0; high = 1; // default untuk boolean-indexed
+            low = 0; high = 1;
         } else if (isNT(c, "<type>")) {
             auto [tc, ref] = visitType(c);
             etyp = tc; eref = ref;
@@ -457,10 +391,6 @@ std::pair<int,int> SemanticAnalyzer::visitArrayType(ParseTreeNode* n) {
     return {T_ARRAY, aIdx};
 }
 
-// ===================================================================
-// Evaluasi nilai <constant> menjadi integer
-// (untuk konstanta integer; untuk char ambil ASCII; real jadi integer)
-// ===================================================================
 int SemanticAnalyzer::evalConstant(ParseTreeNode* n) {
     if (!n) return 0;
 
@@ -488,9 +418,6 @@ int SemanticAnalyzer::evalConstant(ParseTreeNode* n) {
     return 0;
 }
 
-// ===================================================================
-// Tipe dari <constant>
-// ===================================================================
 int SemanticAnalyzer::typeOfConstant(ParseTreeNode* n) {
     if (!n) return T_NONE;
     for (auto* c : n->children) {
