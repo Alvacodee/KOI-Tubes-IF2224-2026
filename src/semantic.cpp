@@ -1,7 +1,6 @@
 #include "semantic.hpp"
 #include <sstream>
 #include <algorithm>
-// #include <> //tambahin include nya disini wan
 
 SemanticAnalyzer::SemanticAnalyzer() {}
 
@@ -454,25 +453,125 @@ ASTNode* SemanticAnalyzer::visitFactor(ParseTreeNode* n) {
 }
 
 ASTNode* SemanticAnalyzer::visitVariable(ParseTreeNode* n) {
-    // Cek dulu apakah dia punya komponen (hindari memory leak)
-    for (auto* c : n->children) {
-        if (isNT(c, "<component-variable>")) {
-            return visitVariable(c);
+    if (!n) return makeAST(AST_EMPTY);
+
+    bool isArrayAccess = false;
+    if (isNT(n, "<component-variable>") || isNT(n, "<indexed-variable>")) {
+        isArrayAccess = true;
+    } else {
+        for (auto* c : n->children) {
+            if (isNT(c, "<component-variable>") || isNT(c, "<indexed-variable>")) {
+                isArrayAccess = true;
+                break;
+            }
         }
     }
 
+    if (isArrayAccess) {
+        ASTNode* ast = makeAST(AST_ARRAY_ACCESS);
+        
+        ParseTreeNode* idNode = nullptr;
+        ParseTreeNode* idxNode = nullptr;
+        
+        std::vector<ParseTreeNode*> stack = {n};
+        while (!stack.empty()) {
+            ParseTreeNode* curr = stack.back();
+            stack.pop_back();
+            
+            if (isTok(curr, "ident") && !idNode) {
+                idNode = curr;
+            } 
+            else if (isNT(curr, "<index-list>") && !idxNode) {
+                idxNode = curr;
+            }
+            
+            for (int i = (int)curr->children.size() - 1; i >= 0; i--) {
+                stack.push_back(curr->children[i]);
+            }
+        }
+
+        if (idNode) {
+            std::string arrName = tokVal(idNode);
+            ast->value = arrName;
+            int idx = symtab.lookup(arrName);
+            
+            if (idx >= 0) {
+                ast->tabIndex = idx;
+                int typeCode = symtab.tab[idx].type;
+                int atabRef = symtab.tab[idx].ref;
+                
+                if (typeCode != T_ARRAY) {
+                    addError("Variabel '" + arrName + "' bukan array");
+                } else {
+                    int realAtabIdx = atabRef;
+                    if (realAtabIdx == (int)symtab.atab.size()) realAtabIdx -= 1;
+                    
+                    if (realAtabIdx >= 0 && realAtabIdx < (int)symtab.atab.size()) {
+                        ast->typeCode = symtab.atab[realAtabIdx].etyp; 
+                    }
+                }
+            } else {
+                addError("Variabel tidak dideklarasikan: " + arrName);
+            }
+        }
+
+        if (idxNode) {
+            ParseTreeNode* targetIdxTok = nullptr;
+            std::vector<ParseTreeNode*> q = {idxNode};
+            while(!q.empty()) {
+                auto* curr = q.back(); q.pop_back();
+                if (isTok(curr, "intcon") || isTok(curr, "ident")) {
+                    targetIdxTok = curr; 
+                    break;
+                }
+                for (int i = (int)curr->children.size() - 1; i >= 0; i--) {
+                    q.push_back(curr->children[i]);
+                }
+            }
+            
+            if (targetIdxTok) {
+                ASTNode* indexAst = nullptr;
+                if (isTok(targetIdxTok, "intcon")) {
+                    indexAst = makeAST(AST_INT_LIT, tokVal(targetIdxTok));
+                    indexAst->typeCode = T_INTEGER; 
+                } else if (isTok(targetIdxTok, "ident")) {
+                    indexAst = makeAST(AST_VAR, tokVal(targetIdxTok));
+                    int iRef = symtab.lookup(tokVal(targetIdxTok));
+                    if (iRef >= 0) indexAst->typeCode = symtab.tab[iRef].type;
+                }
+                
+                if (indexAst) {
+                    ast->add(indexAst);
+                    if (indexAst->typeCode != T_NONE && indexAst->typeCode != T_INTEGER) {
+                        addError("Array index must be of Integer type");
+                    }
+                }
+            }
+        }
+        return ast;
+    }
+
     ASTNode* ast = makeAST(AST_VAR);
+    ParseTreeNode* idNode = nullptr;
+    
     for (auto* c : n->children) {
         if (isTok(c, "ident")) {
-            ast->value = tokVal(c);
-            int idx = symtab.lookup(tokVal(c));
-            if (idx >= 0) { 
-                ast->tabIndex = idx; 
-                ast->typeCode = symtab.tab[idx].type; 
-            }
-            else addError("Variabel tidak dideklarasikan: " + tokVal(c));
+            idNode = c;
+            break;
         }
     }
+    
+    if (idNode) {
+        ast->value = tokVal(idNode);
+        int idx = symtab.lookup(ast->value);
+        if (idx >= 0) { 
+            ast->tabIndex = idx; 
+            ast->typeCode = symtab.tab[idx].type; 
+        } else {
+            addError("Variabel tidak dideklarasikan: " + ast->value);
+        }
+    }
+    
     return ast;
 }
 
