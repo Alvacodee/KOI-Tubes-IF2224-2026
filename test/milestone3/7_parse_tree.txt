@@ -1,0 +1,136 @@
+<program>
+├── <program-header>
+│   ├── programsy(program)
+│   ├── ident(TestArrayError)
+│   └── semicolon(;)
+├── <block>
+│   ├── <declaration-part>
+│   │   └── <var-declaration>
+│   │       ├── varsy(var)
+│   │       ├── <identifier-list>
+│   │       │   └── ident(kata)
+│   │       ├── colon(:)
+│   │       ├── <type>
+│   │       │   └── <array-type>
+│   │       │       ├── arraysy(array)
+│   │       │       ├── lbrack([)
+│   │       │       ├── <range>
+│   │       │       │   ├── <constant>
+│   │       │       │   │   └── intcon(1)
+│   │       │       │   ├── period(.)
+│   │       │       │   ├── period(.)
+│   │       │       │   └── <constant>
+│   │       │       │       └── intcon(3)
+│   │       │       ├── rbrack(])
+│   │       │       ├── ofsy(of)
+│   │       │       └── <type>
+│   │       │           └── ident(string)
+│   │       ├── semicolon(;)
+│   │       ├── <identifier-list>
+│   │       │   └── ident(idx)
+│   │       ├── colon(:)
+│   │       ├── <type>
+│   │       │   └── ident(string)
+│   │       ├── semicolon(;)
+│   │       ├── <identifier-list>
+│   │       │   └── ident(hasil)
+│   │       ├── colon(:)
+│   │       ├── <type>
+│   │       │   └── ident(integer)
+│   │       └── semicolon(;)
+│   └── <compound-statement>
+│       ├── beginsy(begin)
+│       ├── <statement-list>
+│       │   ├── <assignment-statement>
+│       │   │   ├── <variable>
+│       │   │   │   └── <component-variable>
+│       │   │   │       ├── <variable>
+│       │   │   │       │   └── ident(kata)
+│       │   │   │       ├── lbrack([)
+│       │   │   │       ├── <index-list>
+│       │   │   │       │   └── intcon(1)
+│       │   │   │       └── rbrack(])
+│       │   │   ├── becomes(:=)
+│       │   │   └── <expression>
+│       │   │       └── <simple-expression>
+│       │   │           └── <term>
+│       │   │               └── <factor>
+│       │   │                   └── string('Arion')
+│       │   ├── semicolon(;)
+│       │   ├── <assignment-statement>
+│       │   │   ├── <variable>
+│       │   │   │   └── <component-variable>
+│       │   │   │       ├── <variable>
+│       │   │   │       │   └── ident(kata)
+│       │   │   │       ├── lbrack([)
+│       │   │   │       ├── <index-list>
+│       │   │   │       │   └── intcon(2)
+│       │   │   │       └── rbrack(])
+│       │   │   ├── becomes(:=)
+│       │   │   └── <expression>
+│       │   │       └── <simple-expression>
+│       │   │           └── <term>
+│       │   │               └── <factor>
+│       │   │                   └── string('Compiler')
+│       │   ├── semicolon(;)
+│       │   ├── <assignment-statement>
+│       │   │   ├── <variable>
+│       │   │   │   └── <component-variable>
+│       │   │   │       ├── <variable>
+│       │   │   │       │   └── ident(kata)
+│       │   │   │       ├── lbrack([)
+│       │   │   │       ├── <index-list>
+│       │   │   │       │   └── intcon(3)
+│       │   │   │       └── rbrack(])
+│       │   │   ├── becomes(:=)
+│       │   │   └── <expression>
+│       │   │       └── <simple-expression>
+│       │   │           └── <term>
+│       │   │               └── <factor>
+│       │   │                   └── intcon(100)
+│       │   ├── semicolon(;)
+│       │   ├── <assignment-statement>
+│       │   │   ├── <variable>
+│       │   │   │   └── ident(idx)
+│       │   │   ├── becomes(:=)
+│       │   │   └── <expression>
+│       │   │       └── <simple-expression>
+│       │   │           └── <term>
+│       │   │               └── <factor>
+│       │   │                   └── string('satu')
+│       │   ├── semicolon(;)
+│       │   ├── <assignment-statement>
+│       │   │   ├── <variable>
+│       │   │   │   └── <component-variable>
+│       │   │   │       ├── <variable>
+│       │   │   │       │   └── ident(kata)
+│       │   │   │       ├── lbrack([)
+│       │   │   │       ├── <index-list>
+│       │   │   │       │   └── ident(idx)
+│       │   │   │       └── rbrack(])
+│       │   │   ├── becomes(:=)
+│       │   │   └── <expression>
+│       │   │       └── <simple-expression>
+│       │   │           └── <term>
+│       │   │               └── <factor>
+│       │   │                   └── string('Error')
+│       │   ├── semicolon(;)
+│       │   ├── <assignment-statement>
+│       │   │   ├── <variable>
+│       │   │   │   └── ident(hasil)
+│       │   │   ├── becomes(:=)
+│       │   │   └── <expression>
+│       │   │       └── <simple-expression>
+│       │   │           └── <term>
+│       │   │               └── <factor>
+│       │   │                   └── <variable>
+│       │   │                       └── <component-variable>
+│       │   │                           ├── <variable>
+│       │   │                           │   └── ident(kata)
+│       │   │                           ├── lbrack([)
+│       │   │                           ├── <index-list>
+│       │   │                           │   └── intcon(1)
+│       │   │                           └── rbrack(])
+│       │   └── semicolon(;)
+│       └── endsy(end)
+└── period(.)

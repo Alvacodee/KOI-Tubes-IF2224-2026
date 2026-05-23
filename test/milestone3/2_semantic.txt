@@ -1,0 +1,23 @@
+--- Semantic Errors (5) ---
+  - Semantic Error: Type mismatch in IF condition: expected Boolean
+  - Semantic Error: Type mismatch in WHILE condition: expected Boolean
+  - Semantic Error: Type mismatch in REPEAT-UNTIL condition: expected Boolean
+  - Semantic Error: FOR counter variable must be Integer: s
+  - Semantic Error: FOR range expression must evaluate to Integer
+
+
+--- Symbol Table (tab) ---
+idx  identifier          obj         type    ref   nrm   lev   adr     link    
+-------------------------------------------------------------------------------
+38   testcferror         program     none    0     1     0     0       37      
+39   c                   variable    integer 0     1     1     0       0       
+40   s                   variable    string  0     1     1     1       39      
+
+--- Block Table (btab) ---
+idx   last    lpar    psze    vsze    
+----------------------------------------
+0     38      0       0       0       
+1     40      0       0       2       
+
+--- Array Table (atab) ---
+(kosong)

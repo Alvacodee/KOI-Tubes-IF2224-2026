@@ -1,0 +1,16 @@
+program TestArrayValid;
+var
+  angka: array[1..5] of integer;
+  i, total: integer;
+begin
+  total := 0;
+  
+  { Mengisi array }
+  for i := 1 to 5 do
+  begin
+    angka[i] := i * 10;
+  end;
+  
+  { Mengakses dan menjumlahkan elemen array }
+  total := angka[1] + angka[5];
+end.

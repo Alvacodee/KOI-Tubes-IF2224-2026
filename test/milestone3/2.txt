@@ -1,0 +1,29 @@
+program TestCFError;
+var
+  c: integer;
+  s: string;
+begin
+  c := 1;
+  s := 'test';
+  
+  if c then c := 2;                { ERROR: Kondisi IF bertipe Integer }
+  
+  while s do                       { ERROR: Kondisi WHILE bertipe String }
+  begin
+    c := c + 1;
+  end;
+  
+  repeat 
+    c := c + 1;
+  until c;                         { ERROR: Kondisi UNTIL bertipe Integer }
+  
+  for s := 1 to 5 do               { ERROR: Counter FOR bertipe String }
+  begin
+    c := c + 1;
+  end;
+  
+  for c := 'a' to 5 do             { ERROR: Batas awal FOR bertipe String }
+  begin
+    c := c + 1;
+  end;
+end.

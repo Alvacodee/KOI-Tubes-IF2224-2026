@@ -1,0 +1,143 @@
+<program>
+├── <program-header>
+│   ├── programsy(program)
+│   ├── ident(TestAssignError)
+│   └── semicolon(;)
+├── <block>
+│   ├── <declaration-part>
+│   │   └── <var-declaration>
+│   │       ├── varsy(var)
+│   │       ├── <identifier-list>
+│   │       │   └── ident(a)
+│   │       ├── colon(:)
+│   │       ├── <type>
+│   │       │   └── ident(integer)
+│   │       ├── semicolon(;)
+│   │       ├── <identifier-list>
+│   │       │   └── ident(b)
+│   │       ├── colon(:)
+│   │       ├── <type>
+│   │       │   └── ident(real)
+│   │       ├── semicolon(;)
+│   │       ├── <identifier-list>
+│   │       │   └── ident(s)
+│   │       ├── colon(:)
+│   │       ├── <type>
+│   │       │   └── ident(string)
+│   │       └── semicolon(;)
+│   └── <compound-statement>
+│       ├── beginsy(begin)
+│       ├── <statement-list>
+│       │   ├── <assignment-statement>
+│       │   │   ├── <variable>
+│       │   │   │   └── ident(a)
+│       │   │   ├── becomes(:=)
+│       │   │   └── <expression>
+│       │   │       └── <simple-expression>
+│       │   │           └── <term>
+│       │   │               └── <factor>
+│       │   │                   └── intcon(10)
+│       │   ├── semicolon(;)
+│       │   ├── <assignment-statement>
+│       │   │   ├── <variable>
+│       │   │   │   └── ident(b)
+│       │   │   ├── becomes(:=)
+│       │   │   └── <expression>
+│       │   │       └── <simple-expression>
+│       │   │           └── <term>
+│       │   │               └── <factor>
+│       │   │                   └── realcon(3.14)
+│       │   ├── semicolon(;)
+│       │   ├── <assignment-statement>
+│       │   │   ├── <variable>
+│       │   │   │   └── ident(s)
+│       │   │   ├── becomes(:=)
+│       │   │   └── <expression>
+│       │   │       └── <simple-expression>
+│       │   │           └── <term>
+│       │   │               └── <factor>
+│       │   │                   └── string('hello')
+│       │   ├── semicolon(;)
+│       │   ├── <assignment-statement>
+│       │   │   ├── <variable>
+│       │   │   │   └── ident(a)
+│       │   │   ├── becomes(:=)
+│       │   │   └── <expression>
+│       │   │       └── <simple-expression>
+│       │   │           └── <term>
+│       │   │               └── <factor>
+│       │   │                   └── <variable>
+│       │   │                       └── ident(b)
+│       │   ├── semicolon(;)
+│       │   ├── <assignment-statement>
+│       │   │   ├── <variable>
+│       │   │   │   └── ident(b)
+│       │   │   ├── becomes(:=)
+│       │   │   └── <expression>
+│       │   │       └── <simple-expression>
+│       │   │           └── <term>
+│       │   │               └── <factor>
+│       │   │                   └── <variable>
+│       │   │                       └── ident(a)
+│       │   ├── semicolon(;)
+│       │   ├── <assignment-statement>
+│       │   │   ├── <variable>
+│       │   │   │   └── ident(a)
+│       │   │   ├── becomes(:=)
+│       │   │   └── <expression>
+│       │   │       └── <simple-expression>
+│       │   │           └── <term>
+│       │   │               └── <factor>
+│       │   │                   └── <variable>
+│       │   │                       └── ident(s)
+│       │   ├── semicolon(;)
+│       │   ├── <assignment-statement>
+│       │   │   ├── <variable>
+│       │   │   │   └── ident(undefVar)
+│       │   │   ├── becomes(:=)
+│       │   │   └── <expression>
+│       │   │       └── <simple-expression>
+│       │   │           └── <term>
+│       │   │               └── <factor>
+│       │   │                   └── intcon(100)
+│       │   ├── semicolon(;)
+│       │   ├── <case-statement>
+│       │   │   ├── casesy(case)
+│       │   │   ├── <expression>
+│       │   │   │   └── <simple-expression>
+│       │   │   │       └── <term>
+│       │   │   │           └── <factor>
+│       │   │   │               └── <variable>
+│       │   │   │                   └── ident(s)
+│       │   │   ├── ofsy(of)
+│       │   │   ├── <case-block>
+│       │   │   │   ├── <constant>
+│       │   │   │   │   └── intcon(1)
+│       │   │   │   ├── colon(:)
+│       │   │   │   ├── <assignment-statement>
+│       │   │   │   │   ├── <variable>
+│       │   │   │   │   │   └── ident(a)
+│       │   │   │   │   ├── becomes(:=)
+│       │   │   │   │   └── <expression>
+│       │   │   │   │       └── <simple-expression>
+│       │   │   │   │           └── <term>
+│       │   │   │   │               └── <factor>
+│       │   │   │   │                   └── intcon(1)
+│       │   │   │   ├── semicolon(;)
+│       │   │   │   ├── <constant>
+│       │   │   │   │   └── intcon(2)
+│       │   │   │   ├── colon(:)
+│       │   │   │   ├── <assignment-statement>
+│       │   │   │   │   ├── <variable>
+│       │   │   │   │   │   └── ident(a)
+│       │   │   │   │   ├── becomes(:=)
+│       │   │   │   │   └── <expression>
+│       │   │   │   │       └── <simple-expression>
+│       │   │   │   │           └── <term>
+│       │   │   │   │               └── <factor>
+│       │   │   │   │                   └── intcon(2)
+│       │   │   │   └── semicolon(;)
+│       │   │   └── endsy(end)
+│       │   └── semicolon(;)
+│       └── endsy(end)
+└── period(.)

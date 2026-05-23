@@ -1,0 +1,19 @@
+program TestArrayError;
+var
+  kata: array[1..3] of string;
+  idx: string;
+  hasil: integer;
+begin
+  kata[1] := 'Arion';
+  kata[2] := 'Compiler';
+  
+  { ERROR 1: Memasukkan integer ke dalam array of string }
+  kata[3] := 100;
+  
+  { ERROR 2: Menggunakan string sebagai indeks array }
+  idx := 'satu';
+  kata[idx] := 'Error';
+  
+  { ERROR 3: Memasukkan elemen array string ke dalam variabel integer }
+  hasil := kata[1];
+end.

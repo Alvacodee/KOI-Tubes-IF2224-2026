@@ -1,0 +1,16 @@
+program TestExprError;
+var
+  x: integer;
+  y: string;
+  b: boolean;
+begin
+  x := 5;
+  y := 'Arion';
+  b := true;
+  
+  x := x + y;       { ERROR: Penjumlahan Integer dengan String }
+  b := x > y;       { ERROR: Perbandingan relasional Integer dengan String }
+  b := not x;       { ERROR: Operator unary 'not' diterapkan pada Integer }
+  x := x / 0;       { ERROR: Operator '/' mengembalikan Real, tidak bisa dimasukkan ke Integer x }
+  x := x div y;     { ERROR: div mengharuskan kedua operand bertipe Integer }
+end.

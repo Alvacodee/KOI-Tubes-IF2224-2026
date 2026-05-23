@@ -1,0 +1,27 @@
+program TestValid;
+var
+  i, j: integer;
+  x: real;
+  flag: boolean;
+begin
+  i := 1;
+  x := i + 2.5; { Valid: Integer otomatis dipromosikan ke Real }
+  flag := i < 10;
+  
+  if flag then 
+    j := i * 2;
+    
+  while (i < 5) do 
+  begin
+    i := i + 1;
+  end;
+  
+  for j := 1 to 10 do 
+  begin
+    x := x + 1.0;
+  end;
+  
+  repeat 
+    i := i - 1;
+  until i = 0;
+end.

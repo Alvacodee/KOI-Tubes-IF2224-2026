@@ -1,0 +1,82 @@
+--- Decorated AST ---
+ProgramNode('TestValid')
+└── Block → tab[1], lev:1
+    ├── Declarations
+    │   └── VarDecl
+    │       ├── VarDecl('i') → tab[39], type:integer, lev:1
+    │       ├── VarDecl('j') → tab[40], type:integer, lev:1
+    │       ├── VarDecl('x') → tab[41], type:real, lev:1
+    │       └── VarDecl('flag') → tab[42], type:boolean, lev:1
+    └── CompoundStatement
+        └── StatementList
+            ├── Assign → type:integer
+            │   ├── Var('i') → tab[39], type:integer
+            │   └── IntLit('1') → type:integer
+            ├── Assign → type:real
+            │   ├── Var('x') → tab[41], type:real
+            │   └── BinOp op=plus → type:real
+            │       ├── Var('i') → tab[39], type:integer
+            │       └── RealLit('2.5') → type:real
+            ├── Assign → type:boolean
+            │   ├── Var('flag') → tab[42], type:boolean
+            │   └── BinOp op=lss → type:boolean
+            │       ├── Var('i') → tab[39], type:integer
+            │       └── IntLit('10') → type:integer
+            ├── If
+            │   ├── Var('flag') → tab[42], type:boolean
+            │   └── Assign → type:integer
+            │       ├── Var('j') → tab[40], type:integer
+            │       └── BinOp op=times → type:integer
+            │           ├── Var('i') → tab[39], type:integer
+            │           └── IntLit('2') → type:integer
+            ├── While
+            │   ├── BinOp op=lss → type:boolean
+            │   │   ├── Var('i') → tab[39], type:integer
+            │   │   └── IntLit('5') → type:integer
+            │   └── CompoundStatement
+            │       └── StatementList
+            │           └── Assign → type:integer
+            │               ├── Var('i') → tab[39], type:integer
+            │               └── BinOp op=plus → type:integer
+            │                   ├── Var('i') → tab[39], type:integer
+            │                   └── IntLit('1') → type:integer
+            ├── For
+            │   ├── Var('j') → tab[40], type:integer
+            │   ├── IntLit('1') → type:integer
+            │   ├── IntLit('10') → type:integer
+            │   └── CompoundStatement
+            │       └── StatementList
+            │           └── Assign → type:real
+            │               ├── Var('x') → tab[41], type:real
+            │               └── BinOp op=plus → type:real
+            │                   ├── Var('x') → tab[41], type:real
+            │                   └── RealLit('1.0') → type:real
+            └── Repeat
+                ├── StatementList
+                │   └── Assign → type:integer
+                │       ├── Var('i') → tab[39], type:integer
+                │       └── BinOp op=minus → type:integer
+                │           ├── Var('i') → tab[39], type:integer
+                │           └── IntLit('1') → type:integer
+                └── BinOp op=eql → type:boolean
+                    ├── Var('i') → tab[39], type:integer
+                    └── IntLit('0') → type:integer
+
+
+--- Symbol Table (tab) ---
+idx  identifier          obj         type    ref   nrm   lev   adr     link    
+-------------------------------------------------------------------------------
+38   testvalid           program     none    0     1     0     0       37      
+39   i                   variable    integer 0     1     1     0       0       
+40   j                   variable    integer 0     1     1     1       39      
+41   x                   variable    real    0     1     1     2       40      
+42   flag                variable    boolean 0     1     1     3       41      
+
+--- Block Table (btab) ---
+idx   last    lpar    psze    vsze    
+----------------------------------------
+0     38      0       0       0       
+1     42      0       0       4       
+
+--- Array Table (atab) ---
+(kosong)

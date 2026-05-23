@@ -1,0 +1,24 @@
+--- Semantic Errors (5) ---
+  - Semantic Error: Type mismatch in assignment: cannot assign 'real' to 'integer'
+  - Semantic Error: Type mismatch in assignment: cannot assign 'string' to 'integer'
+  - Semantic Error: Variabel tidak dideklarasikan: undefVar
+  - Semantic Error: Case label constant type mismatch with case expression
+  - Semantic Error: Case label constant type mismatch with case expression
+
+
+--- Symbol Table (tab) ---
+idx  identifier          obj         type    ref   nrm   lev   adr     link    
+-------------------------------------------------------------------------------
+38   testassignerror     program     none    0     1     0     0       37      
+39   a                   variable    integer 0     1     1     0       0       
+40   b                   variable    real    0     1     1     1       39      
+41   s                   variable    string  0     1     1     2       40      
+
+--- Block Table (btab) ---
+idx   last    lpar    psze    vsze    
+----------------------------------------
+0     38      0       0       0       
+1     41      0       0       3       
+
+--- Array Table (atab) ---
+(kosong)

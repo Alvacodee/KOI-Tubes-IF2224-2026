@@ -1,0 +1,21 @@
+program TestAssignError;
+var
+  a: integer;
+  b: real;
+  s: string;
+begin
+  a := 10;
+  b := 3.14;
+  s := 'hello';
+  
+  a := b;           { ERROR: Tidak bisa assign Real ke Integer }
+  b := a;           { VALID: Integer ke Real diperbolehkan }
+  a := s;           { ERROR: Tidak bisa assign String ke Integer }
+  
+  undefVar := 100;  { ERROR: Variabel undefVar belum dideklarasikan }
+  
+  case s of         { ERROR: Tipe ekspresi CASE (String) tidak cocok dengan label (Integer) }
+    1: a := 1;
+    2: a := 2;
+  end;
+end.

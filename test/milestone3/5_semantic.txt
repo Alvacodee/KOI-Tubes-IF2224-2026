@@ -1,0 +1,61 @@
+--- Decorated AST ---
+ProgramNode('TestScopeSubprogram')
+└── Block → tab[1], lev:1
+    ├── Declarations
+    │   ├── VarDecl
+    │   │   └── VarDecl('x') → tab[39], type:integer, lev:1
+    │   └── ProcDecl('testProc') → tab[40], lev:1
+    │       ├── ParamList
+    │       │   ├── ParamGroup
+    │       │   │   └── VarDecl('n') → tab[41], type:integer, lev:2
+    │       │   └── ParamGroup
+    │       │       └── VarDecl('s') → tab[42], type:string, lev:2
+    │       └── Block → tab[3], lev:3
+    │           ├── Declarations
+    │           │   └── VarDecl
+    │           │       └── VarDecl('x') → tab[43], type:string, lev:3
+    │           └── CompoundStatement
+    │               └── StatementList
+    │                   ├── Assign → type:string
+    │                   │   ├── Var('x') → tab[43], type:string
+    │                   │   └── Var('s') → tab[42], type:string
+    │                   └── Assign → type:integer
+    │                       ├── Var('n') → tab[41], type:integer
+    │                       └── BinOp op=plus → type:integer
+    │                           ├── Var('n') → tab[41], type:integer
+    │                           └── IntLit('1') → type:integer
+    └── CompoundStatement
+        └── StatementList
+            ├── Assign → type:integer
+            │   ├── Var('x') → tab[39], type:integer
+            │   └── IntLit('10') → type:integer
+            ├── ProcCall('testProc') → tab[40]
+            │   ├── Var('x') → tab[39], type:integer
+            │   └── StrLit(''hello'') → type:string
+            ├── ProcCall('testProc') → tab[40]
+            │   ├── StrLit(''hello'') → type:string
+            │   └── Var('x') → tab[39], type:integer
+            └── ProcCall('testProc') → tab[40]
+                └── Var('x') → tab[39], type:integer
+
+
+--- Symbol Table (tab) ---
+idx  identifier          obj         type    ref   nrm   lev   adr     link    
+-------------------------------------------------------------------------------
+38   testscopesubprogram program     none    0     1     0     0       37      
+39   x                   variable    integer 0     1     1     0       0       
+40   testproc            procedure   none    2     1     1     0       39      
+41   n                   variable    integer 0     1     2     0       0       
+42   s                   variable    string  0     1     2     1       41      
+43   x                   variable    string  0     1     3     0       0       
+
+--- Block Table (btab) ---
+idx   last    lpar    psze    vsze    
+----------------------------------------
+0     38      0       0       0       
+1     40      0       0       1       
+2     42      42      2       0       
+3     43      0       0       1       
+
+--- Array Table (atab) ---
+(kosong)

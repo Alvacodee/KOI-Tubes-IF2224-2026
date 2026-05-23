@@ -1,0 +1,52 @@
+--- Decorated AST ---
+ProgramNode('TestArrayValid')
+└── Block → tab[1], lev:1
+    ├── Declarations
+    │   └── VarDecl
+    │       ├── VarDecl('angka') → tab[39], type:array, lev:1
+    │       ├── VarDecl('i') → tab[40], type:integer, lev:1
+    │       └── VarDecl('total') → tab[41], type:integer, lev:1
+    └── CompoundStatement
+        └── StatementList
+            ├── Assign → type:integer
+            │   ├── Var('total') → tab[41], type:integer
+            │   └── IntLit('0') → type:integer
+            ├── For
+            │   ├── Var('i') → tab[40], type:integer
+            │   ├── IntLit('1') → type:integer
+            │   ├── IntLit('5') → type:integer
+            │   └── CompoundStatement
+            │       └── StatementList
+            │           └── Assign → type:integer
+            │               ├── ArrayAccess('angka') → tab[39], type:integer
+            │               │   └── Var('i') → type:integer
+            │               └── BinOp op=times → type:integer
+            │                   ├── Var('i') → tab[40], type:integer
+            │                   └── IntLit('10') → type:integer
+            └── Assign → type:integer
+                ├── Var('total') → tab[41], type:integer
+                └── BinOp op=plus → type:integer
+                    ├── ArrayAccess('angka') → tab[39], type:integer
+                    │   └── IntLit('1') → type:integer
+                    └── ArrayAccess('angka') → tab[39], type:integer
+                        └── IntLit('5') → type:integer
+
+
+--- Symbol Table (tab) ---
+idx  identifier          obj         type    ref   nrm   lev   adr     link    
+-------------------------------------------------------------------------------
+38   testarrayvalid      program     none    0     1     0     0       37      
+39   angka               variable    array   1     1     1     0       0       
+40   i                   variable    integer 0     1     1     5       39      
+41   total               variable    integer 0     1     1     6       40      
+
+--- Block Table (btab) ---
+idx   last    lpar    psze    vsze    
+----------------------------------------
+0     38      0       0       0       
+1     41      0       0       7       
+
+--- Array Table (atab) ---
+idx   xtyp    etyp    eref    low     high    elsz    size    
+--------------------------------------------------------------
+1     integer integer 0       1       5       1       5       

@@ -1,0 +1,19 @@
+program TestScopeSubprogram;
+var
+  x: integer;
+  
+procedure testProc(n: integer; s: string);
+var
+  x: string; { VALID: Variabel lokal x me-shadow x global }
+begin
+  x := s;    { VALID: Dalam scope lokal ini, x adalah String }
+  n := n + 1;
+end;
+
+begin
+  x := 10;
+  testProc(x, 'hello'); { VALID }
+  
+  testProc('hello', x); { ERROR: Urutan parameter terbalik, mismatch tipe }
+  testProc(x);          { ERROR: Jumlah argumen tidak sesuai (kurang) }
+end.
