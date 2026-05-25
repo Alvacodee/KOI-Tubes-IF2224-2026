@@ -16,7 +16,9 @@ SRCS = $(SRC_DIR)/main.cpp \
        $(SRC_DIR)/symbol_table.cpp \
        $(SRC_DIR)/semantic.cpp \
        $(SRC_DIR)/semantic_decl.cpp \
-       $(SRC_DIR)/parse_tree_reader.cpp
+       $(SRC_DIR)/parse_tree_reader.cpp \
+       $(SRC_DIR)/intermediate_code.cpp \
+       $(SRC_DIR)/interpreter.cpp
 
 OBJS   = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
 TARGET = arion
