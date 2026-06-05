@@ -59,28 +59,61 @@ void IntermediateCodeGenerator::generate(ASTNode* root) {
 }
 
 void IntermediateCodeGenerator::genProgram(ASTNode* node) {
-
-    (void)node;
+    if (!node || node->children.empty()) return;
+    ASTNode* blockNode = node->children[0];
+    emit(OP_INT, 0, frameSize(blockNode->tabIndex));
+    genBlock(blockNode);
+    emit(OP_RET, 0, 0);
 }
 
 void IntermediateCodeGenerator::genBlock(ASTNode* node) {
-
-    (void)node;
+    if (!node) return;
+    int jmpIdx = emit(OP_JMP, 0, 0);
+    for (auto* c : node->children) {
+        if (c->kind == AST_DECL_PART) {
+            genDeclPart(c);
+        }
+    }
+    backpatch(jmpIdx, nextAddr());
+    for (auto* c : node->children) {
+        if (c->kind == AST_COMPOUND) {
+            genCompound(c);
+        }
+    }
 }
 
 void IntermediateCodeGenerator::genDeclPart(ASTNode* node) {
-
-    (void)node;
+    if (!node) return;
+    for (auto* c : node->children) {
+        if (c->kind == AST_PROC_DECL) genProcDecl(c);
+        else if (c->kind == AST_FUNC_DECL) genFuncDecl(c);
+    }
 }
 
 void IntermediateCodeGenerator::genProcDecl(ASTNode* node) {
-
-    (void)node;
+    if (!node) return;
+    procAddrs[node->tabIndex] = nextAddr();
+    int btabIdx = symtab.tab[node->tabIndex].ref;
+    emit(OP_INT, 0, frameSize(btabIdx));
+    for (auto* c : node->children) {
+        if (c->kind == AST_BLOCK) {
+            genBlock(c);
+        }
+    }
+    emit(OP_RET, 0, 0);
 }
 
 void IntermediateCodeGenerator::genFuncDecl(ASTNode* node) {
-
-    (void)node;
+    if (!node) return;
+    procAddrs[node->tabIndex] = nextAddr();
+    int btabIdx = symtab.tab[node->tabIndex].ref;
+    emit(OP_INT, 0, frameSize(btabIdx));
+    for (auto* c : node->children) {
+        if (c->kind == AST_BLOCK) {
+            genBlock(c);
+        }
+    }
+    emit(OP_RET, 0, 0);
 }
 
 void IntermediateCodeGenerator::genExpr(ASTNode* node) {

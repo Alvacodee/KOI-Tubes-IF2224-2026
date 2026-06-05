@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <unordered_map>
 
 enum OpcodeType {
     OP_INT,
@@ -98,6 +99,7 @@ public:
 
 private:
     int labelCounter;
+    std::unordered_map<int, int> procAddrs;
 };
 
 class Interpreter;
