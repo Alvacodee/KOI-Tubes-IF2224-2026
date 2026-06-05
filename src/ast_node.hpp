@@ -4,27 +4,25 @@
 #include <iostream>
 #include <fstream>
 
-// Jenis node AST
 enum ASTKind {
-    // Program structure
+
     AST_PROGRAM, AST_BLOCK, AST_DECL_PART,
-    // Deklarasi
+
     AST_CONST_DECL, AST_TYPE_DECL, AST_VAR_DECL,
     AST_PROC_DECL, AST_FUNC_DECL,
     AST_PARAM_LIST, AST_PARAM_GROUP,
-    // Statement
+
     AST_COMPOUND, AST_STMT_LIST,
     AST_ASSIGN, AST_IF, AST_WHILE, AST_FOR,
     AST_REPEAT, AST_CASE, AST_CASE_BLOCK,
     AST_PROC_CALL, AST_EMPTY,
-    // Ekspresi
+
     AST_BINOP, AST_UNOP,
     AST_VAR, AST_ARRAY_ACCESS, AST_FIELD_ACCESS,
     AST_INT_LIT, AST_REAL_LIT, AST_CHAR_LIT,
     AST_STR_LIT, AST_BOOL_LIT,
 };
 
-// Kode tipe dasar (sesuai Lampiran B contoh)
 const int T_NONE    = 0;
 const int T_INTEGER = 1;
 const int T_REAL    = 2;
@@ -34,7 +32,6 @@ const int T_ARRAY   = 5;
 const int T_RECORD  = 6;
 const int T_STRING  = 7;
 
-// Kelas objek identifier
 const int OBJ_CONST    = 0;
 const int OBJ_VARIABLE = 1;
 const int OBJ_TYPE     = 2;
@@ -43,7 +40,6 @@ const int OBJ_FUNC     = 4;
 const int OBJ_PROGRAM  = 5;
 const int OBJ_KEYWORD  = 6;
 
-// nama tipe untuk output
 inline std::string typeName(int tc) {
     switch (tc) {
         case T_INTEGER: return "integer";
@@ -70,13 +66,11 @@ inline std::string objName(int obj) {
     }
 }
 
-// Node AST
 struct ASTNode {
     ASTKind kind;
     std::string value;
     std::string op;
 
-    // Anotasi semantik (diisi saat semantic analysis)
     int typeCode = T_NONE;
     int typeRef  = 0;
     int tabIndex = -1;
@@ -95,7 +89,6 @@ struct ASTNode {
         if (child) children.push_back(child);
     }
 
-    // Cetak decorated AST ke stream
     void print(std::ostream& out,
                const std::string& prefix = "",
                bool isLast = true) const;
@@ -103,7 +96,6 @@ struct ASTNode {
     void printToFile(const std::string& path) const;
 };
 
-// Factory helper
 inline ASTNode* makeAST(ASTKind k, const std::string& v = "") {
     return new ASTNode(k, v);
 }

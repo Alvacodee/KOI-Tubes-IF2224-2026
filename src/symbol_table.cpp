@@ -20,40 +20,40 @@ void SymbolTable::initPredefined() {
         tab.push_back(TabEntry(toLower(id), 0, obj, type, ref, nrm, 0, adr));
     };
 
-    add("and",       OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 0
-    add("array",     OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 1
-    add("begin",     OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 2
-    add("case",      OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 3
-    add("const",     OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 4
-    add("div",       OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 5
-    add("downto",    OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 6
-    add("do",        OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 7
-    add("else",      OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 8
-    add("end",       OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 9
-    add("for",       OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 10
-    add("function",  OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 11
-    add("if",        OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 12
-    add("mod",       OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 13
-    add("not",       OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 14
-    add("of",        OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 15
-    add("or",        OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 16
-    add("procedure", OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 17
-    add("program",   OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 18
-    add("record",    OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 19
-    add("repeat",    OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 20
-    add("integer",   OBJ_TYPE, T_INTEGER, 0, 1, 0);  // 21
-    add("real",      OBJ_TYPE, T_REAL,    0, 1, 0);  // 22
-    add("boolean",   OBJ_TYPE, T_BOOLEAN, 0, 1, 0);  // 23
-    add("char",      OBJ_TYPE, T_CHAR,    0, 1, 0);  // 24
-    add("string",    OBJ_TYPE, T_STRING,  0, 1, 0);  // 25
-    add("then",      OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 26
-    add("to",        OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 27
-    add("type",      OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 28
-    add("until",     OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 29
-    add("var",       OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 30
-    add("while",     OBJ_KEYWORD, T_NONE, 0, 1, 0);  // 31
-    add("false", OBJ_CONST, T_BOOLEAN, 0, 1, 0);  // 32: false = 0
-    add("true",  OBJ_CONST, T_BOOLEAN, 0, 1, 1);  // 33: true  = 1
+    add("and",       OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("array",     OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("begin",     OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("case",      OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("const",     OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("div",       OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("downto",    OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("do",        OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("else",      OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("end",       OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("for",       OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("function",  OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("if",        OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("mod",       OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("not",       OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("of",        OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("or",        OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("procedure", OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("program",   OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("record",    OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("repeat",    OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("integer",   OBJ_TYPE, T_INTEGER, 0, 1, 0);
+    add("real",      OBJ_TYPE, T_REAL,    0, 1, 0);
+    add("boolean",   OBJ_TYPE, T_BOOLEAN, 0, 1, 0);
+    add("char",      OBJ_TYPE, T_CHAR,    0, 1, 0);
+    add("string",    OBJ_TYPE, T_STRING,  0, 1, 0);
+    add("then",      OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("to",        OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("type",      OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("until",     OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("var",       OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("while",     OBJ_KEYWORD, T_NONE, 0, 1, 0);
+    add("false", OBJ_CONST, T_BOOLEAN, 0, 1, 0);
+    add("true",  OBJ_CONST, T_BOOLEAN, 0, 1, 1);
     add("writeln", OBJ_PROC, T_NONE, 0, 1, 0);
     add("write", OBJ_PROC, T_NONE, 0, 1, 0);
     add("readln", OBJ_PROC, T_NONE, 0, 1, 0);
@@ -66,7 +66,6 @@ void SymbolTable::initPredefined() {
     btab[0].last = (int)tab.size() - 1;
 }
 
-
 int SymbolTable::enter(const std::string& id, int obj, int type,
                        int ref, int nrm, int adr) {
     std::string lower = toLower(id);
@@ -76,7 +75,6 @@ int SymbolTable::enter(const std::string& id, int obj, int type,
     btab[curBlock].last = idx;
     return idx;
 }
-
 
 int SymbolTable::lookup(const std::string& id) const {
     std::string lower = toLower(id);

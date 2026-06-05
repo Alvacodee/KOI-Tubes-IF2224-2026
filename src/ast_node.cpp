@@ -1,7 +1,6 @@
 #include "ast_node.hpp"
 #include <fstream>
 
-// Nama kind untuk display
 static const char* kindStr(ASTKind k) {
     switch (k) {
         case AST_PROGRAM:     return "ProgramNode";
@@ -39,12 +38,11 @@ static const char* kindStr(ASTKind k) {
     }
 }
 
-// Cetak annotasi semantik di samping node
 static void printAnnotation(std::ostream& out, const ASTNode& n) {
     bool hasAnnot = (n.typeCode != T_NONE || n.tabIndex >= 0 || n.level > 0);
     if (!hasAnnot) return;
 
-    out << " \u2192 ";  // →
+    out << " \u2192 ";
     bool first = true;
 
     if (n.tabIndex >= 0) {
@@ -64,15 +62,13 @@ static void printAnnotation(std::ostream& out, const ASTNode& n) {
     }
 }
 
-// Print rekursif
 void ASTNode::print(std::ostream& out,
                     const std::string& prefix,
                     bool isLast) const {
-    // Header baris ini
+
     out << prefix;
     out << (isLast ? "\u2514\u2500\u2500 " : "\u251C\u2500\u2500 ");
 
-    // Isi node
     out << kindStr(kind);
     if (!value.empty()) out << "('" << value << "')";
     if (!op.empty())    out << " op=" << op;
@@ -80,7 +76,6 @@ void ASTNode::print(std::ostream& out,
     printAnnotation(out, *this);
     out << "\n";
 
-    // Child prefix
     std::string childPrefix = prefix + (isLast ? "    " : "\u2502   ");
     for (int i = 0; i < (int)children.size(); i++) {
         if (children[i])
@@ -92,7 +87,6 @@ void ASTNode::printToFile(const std::string& path) const {
     std::ofstream f(path);
     if (!f.is_open()) return;
 
-    // Root: cetak tanpa prefix
     f << kindStr(kind);
     if (!value.empty()) f << "('" << value << "')";
     if (!op.empty())    f << " op=" << op;

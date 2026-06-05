@@ -3,21 +3,16 @@
 #include <sstream>
 #include <iomanip>
 
-// Constructor
 Interpreter::Interpreter(const std::vector<Instruction>& instructions)
     : prog(instructions)
 {
     stack.resize(MAX_STACK_SIZE, 0);
 }
 
-// Entry point eksekusi
 void Interpreter::run() {
-    pc = 0;
+    ip = 0;
     sp = -1;
-    frameDepth = 0;
-    bpStack.clear();
-    pendingRetAddr = 0;
-    pendingDynLink = -1;
+    bp = 0;
 
     if (vulnDetect) {
         for (int i = 0; i < (int)prog.size(); i++) {
@@ -33,37 +28,34 @@ void Interpreter::run() {
         }
     }
 
-    while (pc >= 0 && pc < (int)prog.size()) {
+    while (ip >= 0 && ip < (int)prog.size()) {
         const Instruction& instr = fetch();
         bool cont = execute(instr);
         if (!cont) break;
     }
 }
 
-// Fetch
 const Instruction& Interpreter::fetch() {
-    if (vulnDetect) checkPC(pc);
-    return prog[pc++];
+    if (vulnDetect) checkIP(ip);
+    return prog[ip++];
 }
 
-// Execute
 bool Interpreter::execute(const Instruction& instr) {
     switch (instr.op) {
         case OP_INT: execINT(instr.arg); return true;
         case OP_LIT: execLIT(instr.arg); return true;
-        case OP_LOD: execLOD(instr.arg); return true;
-        case OP_STO: execSTO(instr.arg); return true;
+        case OP_LOD: execLOD(instr.lvl, instr.arg); return true;
+        case OP_STO: execSTO(instr.lvl, instr.arg); return true;
         case OP_OPR: execOPR(instr.arg); return true;
         case OP_JMP: execJMP(instr.arg); return true;
         case OP_JPC: execJPC(instr.arg); return true;
-        case OP_CAL: execCAL(instr.arg); return true;
+        case OP_CAL: execCAL(instr.lvl, instr.arg); return true;
         case OP_RET: return !execRET();
         default:
             throw RuntimeError("opcode tidak dikenal: " + std::to_string(instr.op));
     }
 }
 
-// Operasi stack dasar
 void Interpreter::push(StackVal val) {
     sp++;
     if (vulnDetect && sp >= MAX_STACK_SIZE) {
@@ -91,31 +83,21 @@ void Interpreter::store(int addr, StackVal val) {
     stack[addr] = val;
 }
 
+int Interpreter::find_base(int level) const {
+    int base = bp;
+    for (int i = 0; i < level; i++) {
+        base = stack[base];
+    }
+    return base;
+}
 
 void Interpreter::execINT(int m) {
-    frameDepth++;
-    if (vulnDetect && frameDepth > MAX_STACK_DEPTH) {
-        throwVuln(VULN_STACK_OVERFLOW,
-            "kedalaman frame melebihi " + std::to_string(MAX_STACK_DEPTH));
-    }
-
-    int base = sp + 1;  // indeks slot pertama frame baru
-
-    if (vulnDetect && base + m - 1 >= MAX_STACK_SIZE) {
+    sp = sp + m;
+    if (vulnDetect && sp >= MAX_STACK_SIZE) {
         throwVuln(VULN_STACK_OVERFLOW, "kehabisan ruang stack");
     }
-
-    bpStack.push_back(base);
-
-    for (int i = 0; i < m; i++) {
-        stack[base + i] = 0;
-    }
-    sp = base + m - 1;
-
-    if (bpStack.size() > 1) {
-        stack[base + 0] = 0;
-        stack[base + 1] = pendingDynLink;
-        stack[base + 2] = pendingRetAddr;
+    for (int i = sp - m + 1; i <= sp; i++) {
+        stack[i] = 0;
     }
 }
 
@@ -123,13 +105,15 @@ void Interpreter::execLIT(int v) {
     push(static_cast<StackVal>(v));
 }
 
-void Interpreter::execLOD(int a) {
-    push(load(a));
+void Interpreter::execLOD(int level, int a) {
+    int frame_base = find_base(level);
+    push(load(frame_base + a));
 }
 
-void Interpreter::execSTO(int a) {
+void Interpreter::execSTO(int level, int a) {
     StackVal val = pop();
-    store(a, val);
+    int frame_base = find_base(level);
+    store(frame_base + a, val);
 }
 
 void Interpreter::execOPR(int o) {
@@ -157,53 +141,38 @@ void Interpreter::execOPR(int o) {
 }
 
 void Interpreter::execJMP(int l) {
-    if (vulnDetect) checkPC(l);
-    pc = l;
+    if (vulnDetect) checkIP(l);
+    ip = l;
 }
 
 void Interpreter::execJPC(int l) {
     StackVal cond = pop();
     if (cond == 0) {
-        if (vulnDetect) checkPC(l);
-        pc = l;
+        if (vulnDetect) checkIP(l);
+        ip = l;
     }
 }
 
-void Interpreter::execCAL(int l) {
-    if (vulnDetect) checkPC(l);
+void Interpreter::execCAL(int level, int l) {
+    if (vulnDetect) checkIP(l);
 
-    pendingRetAddr = pc;
-    pendingDynLink = sp;
-
-    pc = l;
+    push(find_base(level));
+    push(bp);
+    push(ip);
+    bp = sp - 2;
+    ip = l;
 }
 
 bool Interpreter::execRET() {
-    frameDepth--;
-
-    if (bpStack.empty()) {
-        sp = -1;
-        return true;
-    }
-
-    int base = bpStack.back();
-    bpStack.pop_back();
-
-    if (bpStack.empty()) {
-        sp = -1;
-        return true;
-    }
-
-    StackVal dynLink = stack[base + 1];
-    StackVal retAddr = stack[base + 2];
-
-    sp = (int)dynLink;
-    pc = (int)retAddr;
-
+    if (bp == 0 && ip == 0) return true;
+    StackVal old_ip = stack[bp + 2];
+    StackVal old_bp = stack[bp + 1];
+    sp = bp - 1;
+    ip = (int)old_ip;
+    bp = (int)old_bp;
+    if (ip == 0) return true;
     return false;
 }
-
-// Operasi OPR — aritmatika & logika
 
 void Interpreter::oprNEG() {
     StackVal a = pop();
@@ -311,8 +280,6 @@ void Interpreter::oprOR() {
     push((a != 0 || b != 0) ? 1 : 0);
 }
 
-// Helper validasi (bonus vulnerability detection)
-
 void Interpreter::throwVuln(VulnType type, const std::string& detail) const {
     std::string msg;
     switch (type) {
@@ -337,7 +304,7 @@ void Interpreter::checkAddr(int addr) const {
     }
 }
 
-void Interpreter::checkPC(int target) const {
+void Interpreter::checkIP(int target) const {
     if (target < 0 || target >= (int)prog.size()) {
         throwVuln(VULN_INVALID_JUMP,
             "baris " + std::to_string(target) + " tidak ada (total instruksi: " +

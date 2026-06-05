@@ -6,7 +6,6 @@
 #include <iostream>
 #include <fstream>
 
-// Opcode TAC (Three-Address Code)
 enum OpcodeType {
     OP_INT,
     OP_LIT,
@@ -19,7 +18,6 @@ enum OpcodeType {
     OP_RET,
 };
 
-// Nomor operasi untuk OPR
 enum OprType {
     OPR_NEG   = 1,
     OPR_ADD   = 2,
@@ -41,7 +39,6 @@ enum OprType {
     OPR_OR    = 18,
 };
 
-// Satu instruksi TAC
 struct Instruction {
     OpcodeType op;
     int        lvl;
@@ -55,46 +52,32 @@ struct Instruction {
     std::string opName() const;
 };
 
-// Intermediate Code Generator
-// Mengubah Decorated AST → daftar Instruction (TAC)
-// Menggunakan pendekatan DFS-based (bukan DFS murni)
 class IntermediateCodeGenerator {
 public:
-    // Daftar instruksi hasil generate
+
     std::vector<Instruction> code;
 
-    // Reference ke symbol table (dari SemanticAnalyzer)
     const SymbolTable& symtab;
 
-    // Constructor
-    explicit IntermediateCodeGenerator(const SymbolTable& st)
-        : symtab(st), labelCounter(0) {}
+    explicit IntermediateCodeGenerator(const SymbolTable& st) : symtab(st), labelCounter(0) {}
 
-    // Entry point: generate dari AST_PROGRAM node
     void generate(ASTNode* root);
 
-    // Cetak semua instruksi ke stream
     void print(std::ostream& out) const;
 
-    // Simpan ke file
     void printToFile(const std::string& path) const;
 
-    // ---- Interface ----
-
-    // Program structure & fungsi/prosedur
     void genProgram(ASTNode* node);
     void genBlock(ASTNode* node);
     void genDeclPart(ASTNode* node);
     void genProcDecl(ASTNode* node);
     void genFuncDecl(ASTNode* node);
 
-    // Expressions & statements
     void genExpr(ASTNode* node);
     void genAssign(ASTNode* node);
     void genProcCall(ASTNode* node);
     void genVar(ASTNode* node);
 
-    // Control flow
     void genCompound(ASTNode* node);
     void genStmtList(ASTNode* node);
     void genStmt(ASTNode* node);
@@ -103,28 +86,18 @@ public:
     void genFor(ASTNode* node);
     void genRepeat(ASTNode* node);
 
-    // ---- Helper internal ----
-
-    // Emit satu instruksi, kembalikan index baris
     int emit(OpcodeType op, int lvl, int arg);
 
-    // Kembalikan index baris instruksi berikutnya (untuk backpatch)
     int nextAddr() const { return (int)code.size(); }
 
-    // Backpatch: ubah arg instruksi di baris `addr` menjadi `target`
     void backpatch(int addr, int target);
 
-    // Hitung ukuran frame dari btab entry ke-b
     int frameSize(int btabIdx) const;
 
-    // Cari address absolut variabel dari tab entry ke-i
     int varAddress(int tabIdx) const;
 
 private:
     int labelCounter;
 };
-
-// Interpreter Header
-// forward declaration
 
 class Interpreter;

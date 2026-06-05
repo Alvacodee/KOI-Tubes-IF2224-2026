@@ -43,7 +43,6 @@ ASTNode* SemanticAnalyzer::visitConstDeclaration(ParseTreeNode* n) {
     return ast;
 }
 
-
 ASTNode* SemanticAnalyzer::visitTypeDeclaration(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_TYPE_DECL);
 
@@ -403,7 +402,7 @@ int SemanticAnalyzer::evalConstant(ParseTreeNode* n) {
         if (isTok(c, "realcon")) return sign * (int)std::stod(tokVal(c));
         if (isTok(c, "charcon")) {
             std::string v = tokVal(c);
-            // 'x' -> ambil karakter di index 1
+
             return (v.size() >= 2) ? (int)(unsigned char)v[1] : 0;
         }
         if (isTok(c, "string")) return 0;

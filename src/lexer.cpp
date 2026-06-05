@@ -30,7 +30,6 @@ Token Lexer::getNextToken() {
         return Token(TokenType::ERROR_TOK, "EOF", currentLine);
     }
 
-    // --- Komentar: { } atau (* *) ---
     if (currentChar == '{') {
         std::string content;
         bool closed = false;
@@ -46,7 +45,7 @@ Token Lexer::getNextToken() {
     if (currentChar == '(') {
         readNextChar();
         if (currentChar == '*') {
-            // komentar (* ... *)
+
             std::string content;
             bool closed = false;
             while (!eofReached) {
@@ -63,24 +62,23 @@ Token Lexer::getNextToken() {
             if (!closed) std::cerr << "Error: komentar tidak tertutup\n";
             return Token(TokenType::COMMENT, content, currentLine);
         }
-        // bukan komentar, kembalikan LPARENT
+
         return Token(TokenType::LPARENT, "(", currentLine);
     }
 
-    // --- Angka ---
     if (currentChar >= '0' && currentChar <= '9') {
         std::string numBuf;
         int dotCount = 0;
         while (!eofReached && ((currentChar >= '0' && currentChar <= '9') || currentChar == '.')) {
             if (currentChar == '.') {
-                // lookahead: jika char berikutnya juga '.', ini range, bukan desimal
+
                 int next = inputStream.peek();
                 if (next == '.') break;
                 dotCount++;
                 if (dotCount > 1) break;
                 numBuf += '.';
                 readNextChar();
-                // setelah titik harus digit agar valid realcon
+
                 if (!(currentChar >= '0' && currentChar <= '9')) {
                     numBuf.pop_back();
                     dotCount--;
@@ -90,7 +88,7 @@ Token Lexer::getNextToken() {
             }
             numBuf += currentChar;
             readNextChar();
-            // tangani 'e'/'E' sebagai error (tidak valid di Arion)
+
             if (currentChar == 'e' || currentChar == 'E') {
                 while (!eofReached && !isspace(currentChar) && !isOperatorChar(currentChar)) {
                     numBuf += currentChar;
@@ -103,7 +101,6 @@ Token Lexer::getNextToken() {
         return Token(ty, numBuf, currentLine);
     }
 
-    // --- Identifier / Keyword ---
     if ((currentChar >= 'a' && currentChar <= 'z') || (currentChar >= 'A' && currentChar <= 'Z')) {
         std::string identBuf;
         while (!eofReached && isIdentChar(currentChar)) {
@@ -113,7 +110,6 @@ Token Lexer::getNextToken() {
         return Token(classifyIdent(identBuf), identBuf, currentLine);
     }
 
-    // --- String / Char ---
     if (currentChar == '\'') {
         std::string strBuf = "'";
         while (readNextChar(), !eofReached && currentChar != '\'') {
@@ -121,12 +117,11 @@ Token Lexer::getNextToken() {
         }
         strBuf += '\'';
         readNextChar();
-        // charcon: 'x' (panjang 3), sisanya string
+
         TokenType ty = (strBuf.size() == 3) ? TokenType::CHARCON : TokenType::STRING_TOK;
         return Token(ty, strBuf, currentLine);
     }
 
-    // --- Operator ---
     if (isOperatorChar(currentChar)) {
         std::string opBuf;
         opBuf += currentChar;
@@ -136,7 +131,7 @@ Token Lexer::getNextToken() {
         if (first == ':' && currentChar == '=') {
             opBuf += currentChar; readNextChar();
         } else if (first == '=' && currentChar == '=') {
-            // == sebagai satu token EQL
+
             opBuf += currentChar; readNextChar();
         } else if (first == '<' && (currentChar == '=' || currentChar == '>')) {
             opBuf += currentChar; readNextChar();

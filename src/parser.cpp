@@ -82,7 +82,7 @@ ParseTreeNode* Parser::parseStatementList() {
     ParseTreeNode* node = new ParseTreeNode("<statement-list>");
 
     if (peek().type == TokenType::ENDSY || peek().type == TokenType::UNTILSY) {
-        return node;   // tanpa anak
+        return node;
     }
 
     node->addChild(parseStatement());
@@ -104,7 +104,7 @@ ParseTreeNode* Parser::parseStatement() {
     TokenType t = peek().type;
 
     if (t == TokenType::BEGINSY) {
-        return parseCompoundStatement(); 
+        return parseCompoundStatement();
     } else if (t == TokenType::IFSY) {
         return parseIfStatement();
     } else if (t == TokenType::CASESY) {
@@ -122,7 +122,7 @@ ParseTreeNode* Parser::parseStatement() {
             return parseAssignmentStatement();
         }
     }
-    // empty statement: kembalikan node kosong (valid untuk ; di akhir)
+
     return new ParseTreeNode("<empty-statement>");
 }
 
@@ -190,7 +190,7 @@ ParseTreeNode* Parser::parseWhileStatement() {
     node->addChild(match(TokenType::WHILESY));
     node->addChild(parseExpression());
     node->addChild(match(TokenType::DOSY));
-    // M3: body wajib compound-statement
+
     node->addChild(parseCompoundStatement());
     return node;
 }
@@ -217,7 +217,7 @@ ParseTreeNode* Parser::parseForStatement() {
     }
     node->addChild(parseExpression());
     node->addChild(match(TokenType::DOSY));
-    // M3: body wajib compound-statement
+
     node->addChild(parseCompoundStatement());
     return node;
 }

@@ -5,18 +5,15 @@
 #include <algorithm>
 #include <iostream>
 
-// =============================================
-// Entry tabel identifier (tab)
-// =============================================
 struct TabEntry {
-    std::string id;  // nama identifier (lowercase untuk case-insensitive)
-    int link;        // indeks ke identifier sebelumnya dalam scope
-    int obj;         // kelas objek (OBJ_*)
-    int type;        // kode tipe (T_*)
-    int ref;         // ref ke atab/btab untuk tipe komposit
-    int nrm;         // 1=normal variable, 0=var parameter
-    int lev;         // lexical level
-    int adr;         // alamat / offset / nilai konstanta
+    std::string id;
+    int link;
+    int obj;
+    int type;
+    int ref;
+    int nrm;
+    int lev;
+    int adr;
 
     TabEntry(const std::string& id_, int link_, int obj_, int type_,
              int ref_, int nrm_, int lev_, int adr_)
@@ -24,21 +21,17 @@ struct TabEntry {
           ref(ref_), nrm(nrm_), lev(lev_), adr(adr_) {}
 };
 
-// =============================================
-// Entry tabel blok (btab)
-// =============================================
 struct BtabEntry {
-    int last;   // indeks terakhir di tab untuk blok ini
-    int lpar;   // indeks parameter terakhir
-    int psze;   // ukuran parameter block
-    int vsze;   // ukuran variabel lokal
+    int last;
+    int lpar;
+    int psze;
+    int vsze;
 
     BtabEntry() : last(0), lpar(0), psze(0), vsze(0) {}
     BtabEntry(int last_, int lpar_, int psze_, int vsze_)
         : last(last_), lpar(lpar_), psze(psze_), vsze(vsze_) {}
 };
 
-// Entry tabel array
 struct AtabEntry {
     int xtyp;
     int etyp;
@@ -55,7 +48,6 @@ struct AtabEntry {
     }
 };
 
-// Symbol Table
 class SymbolTable {
 public:
     std::vector<TabEntry>  tab;
@@ -66,34 +58,25 @@ public:
     int curBlock;
     std::vector<int> display;
 
-    // Indeks pertama entry user (setelah semua predefined)
     static const int FIRST_USER = 38;
 
     SymbolTable();
 
-    // Inisialisasi reserved words & predefined identifiers
     void initPredefined();
 
-    // Masukkan identifier baru, kembalikan indeksnya
     int enter(const std::string& id, int obj, int type,
               int ref, int nrm, int adr);
 
-    // Lookup dari scope terdalam ke terluar (case-insensitive)
     int lookup(const std::string& id) const;
 
-    // Buka blok baru (prosedur/fungsi/record), kembalikan indeks btab
     int openBlock();
 
-    // Tutup blok aktif
     void closeBlock();
 
-    // Tambah entry array, kembalikan indeks atab
     int newArray(int xtyp, int etyp, int eref, int low, int high, int elsz);
 
-    // Ukuran tipe dalam unit memori
     int typeSize(int typeCode, int ref) const;
 
-    // Print tables
     void printTab(std::ostream& out) const;
     void printBtab(std::ostream& out) const;
     void printAtab(std::ostream& out) const;

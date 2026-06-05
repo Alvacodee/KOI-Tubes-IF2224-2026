@@ -43,7 +43,6 @@ void SemanticAnalyzer::addError(const std::string& msg) {
     errors.push_back("Semantic Error: " + msg);
 }
 
-
 ASTNode* SemanticAnalyzer::visitProgram(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_PROGRAM);
 
@@ -136,7 +135,7 @@ ASTNode* SemanticAnalyzer::visitStatement(ParseTreeNode* n) {
     if (isNT(n, "<empty-statement>"))      return makeAST(AST_EMPTY);
 
     if (isNT(n, "<statement>") && !n->children.empty()) {
-        return visitStatement(n->children[0]); 
+        return visitStatement(n->children[0]);
     }
 
     return makeAST(AST_EMPTY);
@@ -163,12 +162,12 @@ ASTNode* SemanticAnalyzer::visitAssignStatement(ParseTreeNode* n) {
             if (targetAST->typeCode == valueAST->typeCode) {
                 compatible = true;
             } else if (targetAST->typeCode == T_REAL && valueAST->typeCode == T_INTEGER) {
-                compatible = true; 
+                compatible = true;
             }
         }
         if (!compatible) {
-            addError("Type mismatch in assignment: cannot assign '" + 
-                typeName(valueAST->typeCode) + "' to '" + 
+            addError("Type mismatch in assignment: cannot assign '" +
+                typeName(valueAST->typeCode) + "' to '" +
                 typeName(targetAST->typeCode) + "'");
         }
         ast->typeCode = targetAST->typeCode;
@@ -180,7 +179,7 @@ ASTNode* SemanticAnalyzer::visitIfStatement(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_IF);
     for (auto* c : n->children) {
         if (isTok(c, "ifsy") || isTok(c, "thensy") || isTok(c, "elsesy")) continue;
-        
+
         if (isNT(c, "<expression>")) {
             ASTNode* condAST = visitExpression(c);
             if (condAST && condAST->typeCode != T_NONE && condAST->typeCode != T_BOOLEAN) {
@@ -199,7 +198,7 @@ ASTNode* SemanticAnalyzer::visitWhileStatement(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_WHILE);
     for (auto* c : n->children) {
         if (isTok(c, "dosy") || isTok(c, "semicolon")) continue;
-        
+
         if (isNT(c, "<expression>")) {
             ASTNode* condAST = visitExpression(c);
             if (condAST && condAST->typeCode != T_NONE && condAST->typeCode != T_BOOLEAN) {
@@ -218,17 +217,17 @@ ASTNode* SemanticAnalyzer::visitForStatement(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_FOR);
 
     for (auto* c : n->children) {
-        if (isTok(c, "becomes") || isTok(c, "tosy") || 
+        if (isTok(c, "becomes") || isTok(c, "tosy") ||
             isTok(c, "downtosy") || isTok(c, "dosy") || isTok(c, "semicolon")) continue;
-            
+
         if (isTok(c, "ident")) {
             std::string varName = tokVal(c);
             ASTNode* v = makeAST(AST_VAR, varName);
             int idx = symtab.lookup(varName);
-            
-            if (idx >= 0) { 
-                v->tabIndex = idx; 
-                v->typeCode = symtab.tab[idx].type; 
+
+            if (idx >= 0) {
+                v->tabIndex = idx;
+                v->typeCode = symtab.tab[idx].type;
                 if (symtab.tab[idx].type != T_INTEGER) {
                     addError("FOR counter variable must be Integer: " + varName);
                 }
@@ -254,7 +253,7 @@ ASTNode* SemanticAnalyzer::visitRepeatStatement(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_REPEAT);
     for (auto* c : n->children) {
         if (isTok(c, "untilsy")) continue;
-        
+
         if (isNT(c, "<statement-list>")) {
             ASTNode* stmtListAST = visitStatementList(c);
             if (stmtListAST) ast->add(stmtListAST);
@@ -275,7 +274,7 @@ ASTNode* SemanticAnalyzer::visitCaseStatement(ParseTreeNode* n) {
 
     for (auto* c : n->children) {
         if (isTok(c, "ofsy") || isTok(c, "endsy")) continue;
-        
+
         if (isNT(c, "<expression>")) {
             condAST = visitExpression(c);
             if (condAST) ast->add(condAST);
@@ -283,11 +282,11 @@ ASTNode* SemanticAnalyzer::visitCaseStatement(ParseTreeNode* n) {
             ASTNode* cb = makeAST(AST_CASE_BLOCK);
             for (auto* cc : c->children) {
                 if (isTok(cc, "colon") || isTok(cc, "comma") || isTok(cc, "semicolon")) continue;
-                
+
                 if (isNT(cc, "<constant>")) {
                     ASTNode* cst = makeAST(AST_INT_LIT, std::to_string(evalConstant(cc)));
                     cst->typeCode = typeOfConstant(cc);
-                    
+
                     if (condAST && condAST->typeCode != T_NONE && cst->typeCode != T_NONE) {
                         if (condAST->typeCode != cst->typeCode) {
                             addError("Case label constant type mismatch with case expression");
@@ -326,12 +325,12 @@ ASTNode* SemanticAnalyzer::visitExpression(ParseTreeNode* n) {
     if (!n) return makeAST(AST_INT_LIT, "0");
     if (n->children.size() == 1 && isNT(n->children[0], "<simple-expression>"))
         return visitSimpleExpression(n->children[0]);
-    
+
     ASTNode* ast = makeAST(AST_BINOP);
     ASTNode* left = nullptr;
     ASTNode* right = nullptr;
     std::string relop;
-    
+
     for (auto* c : n->children) {
         if (isNT(c, "<simple-expression>")) {
             if (!left) left = visitSimpleExpression(c);
@@ -340,14 +339,14 @@ ASTNode* SemanticAnalyzer::visitExpression(ParseTreeNode* n) {
             for (auto* op : c->children) relop = tokTy(op);
         }
     }
-    
+
     if (left && right) {
         if (left->typeCode == T_NONE || right->typeCode == T_NONE) {
         } else if (left->typeCode != right->typeCode) {
             if (!((left->typeCode == T_INTEGER && right->typeCode == T_REAL) ||
                   (left->typeCode == T_REAL && right->typeCode == T_INTEGER))) {
-                addError("Type mismatch in relational operator '" + relop + 
-                         "': cannot compare " + typeName(left->typeCode) + 
+                addError("Type mismatch in relational operator '" + relop +
+                         "': cannot compare " + typeName(left->typeCode) +
                          " and " + typeName(right->typeCode));
             }
         }
@@ -495,22 +494,22 @@ ASTNode* SemanticAnalyzer::visitVariable(ParseTreeNode* n) {
 
     if (isArrayAccess) {
         ASTNode* ast = makeAST(AST_ARRAY_ACCESS);
-        
+
         ParseTreeNode* idNode = nullptr;
         ParseTreeNode* idxNode = nullptr;
-        
+
         std::vector<ParseTreeNode*> stack = {n};
         while (!stack.empty()) {
             ParseTreeNode* curr = stack.back();
             stack.pop_back();
-            
+
             if (isTok(curr, "ident") && !idNode) {
                 idNode = curr;
-            } 
+            }
             else if (isNT(curr, "<index-list>") && !idxNode) {
                 idxNode = curr;
             }
-            
+
             for (int i = (int)curr->children.size() - 1; i >= 0; i--) {
                 stack.push_back(curr->children[i]);
             }
@@ -520,20 +519,20 @@ ASTNode* SemanticAnalyzer::visitVariable(ParseTreeNode* n) {
             std::string arrName = tokVal(idNode);
             ast->value = arrName;
             int idx = symtab.lookup(arrName);
-            
+
             if (idx >= 0) {
                 ast->tabIndex = idx;
                 int typeCode = symtab.tab[idx].type;
                 int atabRef = symtab.tab[idx].ref;
-                
+
                 if (typeCode != T_ARRAY) {
                     addError("Variabel '" + arrName + "' bukan array");
                 } else {
                     int realAtabIdx = atabRef;
                     if (realAtabIdx == (int)symtab.atab.size()) realAtabIdx -= 1;
-                    
+
                     if (realAtabIdx >= 0 && realAtabIdx < (int)symtab.atab.size()) {
-                        ast->typeCode = symtab.atab[realAtabIdx].etyp; 
+                        ast->typeCode = symtab.atab[realAtabIdx].etyp;
                     }
                 }
             } else {
@@ -547,25 +546,25 @@ ASTNode* SemanticAnalyzer::visitVariable(ParseTreeNode* n) {
             while(!q.empty()) {
                 auto* curr = q.back(); q.pop_back();
                 if (isTok(curr, "intcon") || isTok(curr, "ident")) {
-                    targetIdxTok = curr; 
+                    targetIdxTok = curr;
                     break;
                 }
                 for (int i = (int)curr->children.size() - 1; i >= 0; i--) {
                     q.push_back(curr->children[i]);
                 }
             }
-            
+
             if (targetIdxTok) {
                 ASTNode* indexAst = nullptr;
                 if (isTok(targetIdxTok, "intcon")) {
                     indexAst = makeAST(AST_INT_LIT, tokVal(targetIdxTok));
-                    indexAst->typeCode = T_INTEGER; 
+                    indexAst->typeCode = T_INTEGER;
                 } else if (isTok(targetIdxTok, "ident")) {
                     indexAst = makeAST(AST_VAR, tokVal(targetIdxTok));
                     int iRef = symtab.lookup(tokVal(targetIdxTok));
                     if (iRef >= 0) indexAst->typeCode = symtab.tab[iRef].type;
                 }
-                
+
                 if (indexAst) {
                     ast->add(indexAst);
                     if (indexAst->typeCode != T_NONE && indexAst->typeCode != T_INTEGER) {
@@ -579,29 +578,28 @@ ASTNode* SemanticAnalyzer::visitVariable(ParseTreeNode* n) {
 
     ASTNode* ast = makeAST(AST_VAR);
     ParseTreeNode* idNode = nullptr;
-    
+
     for (auto* c : n->children) {
         if (isTok(c, "ident")) {
             idNode = c;
             break;
         }
     }
-    
+
     if (idNode) {
         ast->value = tokVal(idNode);
         int idx = symtab.lookup(ast->value);
-        if (idx >= 0) { 
-            ast->tabIndex = idx; 
-            ast->typeCode = symtab.tab[idx].type; 
+        if (idx >= 0) {
+            ast->tabIndex = idx;
+            ast->typeCode = symtab.tab[idx].type;
         } else {
             addError("Variabel tidak dideklarasikan: " + ast->value);
         }
     }
-    
+
     return ast;
 }
 
-// Output hasil
 void SemanticAnalyzer::printResults(std::ostream& out) const {
     symtab.printTab(out);
     symtab.printBtab(out);

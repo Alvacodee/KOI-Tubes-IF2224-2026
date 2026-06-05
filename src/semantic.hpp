@@ -7,18 +7,12 @@
 #include <stdexcept>
 #include <iostream>
 
-// Error semantik
 struct SemanticError : public std::runtime_error {
     std::string msg;
     SemanticError(const std::string& m)
         : std::runtime_error("Semantic Error: " + m), msg(m) {}
 };
 
-// =============================================
-// SemanticAnalyzer
-// Traversal top-down pada parse tree,
-// bangun AST, isi symbol table, anotasi tipe
-// =============================================
 class SemanticAnalyzer {
 public:
     SymbolTable symtab;
@@ -26,17 +20,12 @@ public:
 
     SemanticAnalyzer();
 
-    // Entry point
     ASTNode* analyze(ParseTreeNode* parseTree);
 
-    // ---------- Visitor per node ----------
-
-    // Program & Block
     ASTNode* visitProgram(ParseTreeNode* n);
     ASTNode* visitBlock(ParseTreeNode* n);
     ASTNode* visitDeclarationPart(ParseTreeNode* n);
 
-    // Deklarasi (semantic_decl.cpp)
     ASTNode* visitConstDeclaration(ParseTreeNode* n);
     ASTNode* visitTypeDeclaration(ParseTreeNode* n);
     ASTNode* visitVarDeclaration(ParseTreeNode* n);
@@ -45,7 +34,6 @@ public:
     ASTNode* visitFunctionDeclaration(ParseTreeNode* n);
     ASTNode* visitFormalParameterList(ParseTreeNode* n, int& lastParam, int& psze);
 
-    // Tipe (semantic_decl.cpp)
     std::pair<int,int> visitType(ParseTreeNode* n);
     std::pair<int,int> visitArrayType(ParseTreeNode* n);
     int evalConstant(ParseTreeNode* n);
@@ -68,11 +56,10 @@ public:
     ASTNode* visitFactor(ParseTreeNode* n);
     ASTNode* visitVariable(ParseTreeNode* n);
 
-    // Output
     void printResults(std::ostream& out) const;
 
 private:
-    // Helper traversal parse tree
+
     std::string tokVal(ParseTreeNode* n) const;
     std::string tokTy(ParseTreeNode* n) const;
     bool isNT(ParseTreeNode* n, const std::string& name) const;
@@ -80,6 +67,5 @@ private:
     ParseTreeNode* findChild(ParseTreeNode* n, const std::string& name) const;
     std::vector<ParseTreeNode*> childrenNamed(ParseTreeNode* n, const std::string& name) const;
 
-    // Catat error tanpa throw (agar bisa lanjut parsing)
     void addError(const std::string& msg);
 };

@@ -61,7 +61,7 @@ ParseTreeNode* Parser::parseConstant() {
 
 ParseTreeNode* Parser::parseTypeDeclaration() {
     ParseTreeNode* node = new ParseTreeNode("<type-declaration>");
-    node->addChild(match(TokenType::TYPESY)); 
+    node->addChild(match(TokenType::TYPESY));
 
     do {
         node->addChild(match(TokenType::IDENT));
@@ -107,7 +107,7 @@ ParseTreeNode* Parser::parseType() {
         node->addChild(parseEnumerated());
     } else if (t == TokenType::RECORDSY) {
         node->addChild(parseRecordType());
-    } else if (t == TokenType::PLUS || t == TokenType::MINUS || t == TokenType::INTCON || 
+    } else if (t == TokenType::PLUS || t == TokenType::MINUS || t == TokenType::INTCON ||
                t == TokenType::REALCON || t == TokenType::CHARCON || t == TokenType::STRING_TOK) {
         node->addChild(parseRange());
     } else if (t == TokenType::IDENT) {
@@ -206,13 +206,13 @@ ParseTreeNode* Parser::parseProcedureDeclaration() {
     ParseTreeNode* node = new ParseTreeNode("<procedure-declaration>");
     node->addChild(match(TokenType::PROCEDURESY));
     node->addChild(match(TokenType::IDENT));
-    
+
     if (peek().type == TokenType::LPARENT) {
         node->addChild(parseFormalParameterList());
     }
-    
+
     node->addChild(match(TokenType::SEMICOLON));
-    node->addChild(parseBlock()); 
+    node->addChild(parseBlock());
     node->addChild(match(TokenType::SEMICOLON));
     return node;
 }
@@ -221,13 +221,13 @@ ParseTreeNode* Parser::parseFunctionDeclaration() {
     ParseTreeNode* node = new ParseTreeNode("<function-declaration>");
     node->addChild(match(TokenType::FUNCTIONSY));
     node->addChild(match(TokenType::IDENT));
-    
+
     if (peek().type == TokenType::LPARENT) {
         node->addChild(parseFormalParameterList());
     }
-    
+
     node->addChild(match(TokenType::COLON));
-    node->addChild(match(TokenType::IDENT)); 
+    node->addChild(match(TokenType::IDENT));
     node->addChild(match(TokenType::SEMICOLON));
     node->addChild(parseBlock());
     node->addChild(match(TokenType::SEMICOLON));
@@ -238,12 +238,12 @@ ParseTreeNode* Parser::parseFormalParameterList() {
     ParseTreeNode* node = new ParseTreeNode("<formal-parameter-list>");
     node->addChild(match(TokenType::LPARENT));
     node->addChild(parseParameterGroup());
-    
+
     while (peek().type == TokenType::SEMICOLON) {
         node->addChild(match(TokenType::SEMICOLON));
         node->addChild(parseParameterGroup());
     }
-    
+
     node->addChild(match(TokenType::RPARENT));
     return node;
 }
@@ -252,7 +252,7 @@ ParseTreeNode* Parser::parseParameterGroup() {
     ParseTreeNode* node = new ParseTreeNode("<parameter-group>");
     node->addChild(parseIdentifierList());
     node->addChild(match(TokenType::COLON));
-    
+
     if (peek().type == TokenType::ARRAYSY) {
         node->addChild(parseArrayType());
     } else {
