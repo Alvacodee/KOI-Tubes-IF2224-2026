@@ -62,6 +62,7 @@ public:
 
     explicit IntermediateCodeGenerator(const SymbolTable& st) : symtab(st), labelCounter(0) {}
 
+    void setCurrentLevel(int lev) {currentLevel = lev;}
     void generate(ASTNode* root);
 
     void print(std::ostream& out) const;
@@ -100,6 +101,9 @@ public:
 private:
     int labelCounter;
     std::unordered_map<int, int> procAddrs;
+    int currentLevel;
+    int mapOpToOpr(const std::string& op) const;
+    int varOffset(int tabIdx) const;
 };
 
 class Interpreter;
