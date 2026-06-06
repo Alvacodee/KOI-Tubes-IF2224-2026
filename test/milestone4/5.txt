@@ -1,0 +1,17 @@
+program TabelPerkalian;
+var i, j, total: integer;
+begin
+  total := 0;
+  i := 2;
+  while i > 0 do
+  begin
+    j := 2;
+    while j > 0 do
+    begin
+      total := total + 1;
+      j := j - 1;
+    end;
+    i := i - 1;
+  end;
+  writeln(total);
+end.

@@ -1,0 +1,43 @@
+--- Decorated AST ---
+ProgramNode('AljabarSederhana')
+└── Block → tab[1], lev:1
+    ├── Declarations
+    │   └── VarDecl
+    │       ├── VarDecl('a') → tab[39], type:integer, lev:1
+    │       ├── VarDecl('b') → tab[40], type:integer, lev:1
+    │       └── VarDecl('c') → tab[41], type:integer, lev:1
+    └── CompoundStatement
+        └── StatementList
+            ├── Assign → type:integer
+            │   ├── Var('a') → tab[39], type:integer, lev:1
+            │   └── IntLit('5') → type:integer
+            ├── Assign → type:integer
+            │   ├── Var('b') → tab[40], type:integer, lev:1
+            │   └── IntLit('3') → type:integer
+            ├── Assign → type:integer
+            │   ├── Var('c') → tab[41], type:integer, lev:1
+            │   └── BinOp op=plus → type:integer
+            │       ├── Var('a') → tab[39], type:integer, lev:1
+            │       └── BinOp op=times → type:integer
+            │           ├── Var('b') → tab[40], type:integer, lev:1
+            │           └── IntLit('2') → type:integer
+            └── ProcCall('writeln') → tab[34]
+                └── Var('c') → tab[41], type:integer, lev:1
+
+
+--- Symbol Table (tab) ---
+idx  identifier          obj         type    ref   nrm   lev   adr     link    
+-------------------------------------------------------------------------------
+38   aljabarsederhana    program     none    0     1     0     0       37      
+39   a                   variable    integer 0     1     1     0       0       
+40   b                   variable    integer 0     1     1     1       39      
+41   c                   variable    integer 0     1     1     2       40      
+
+--- Block Table (btab) ---
+idx   last    lpar    psze    vsze    
+----------------------------------------
+0     38      0       0       0       
+1     41      0       0       3       
+
+--- Array Table (atab) ---
+(kosong)

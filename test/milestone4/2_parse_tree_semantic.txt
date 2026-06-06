@@ -1,0 +1,43 @@
+--- Decorated AST ---
+ProgramNode('CekGanjilGenap')
+└── Block → tab[1], lev:1
+    ├── Declarations
+    │   └── VarDecl
+    │       ├── VarDecl('x') → tab[39], type:integer, lev:1
+    │       └── VarDecl('hasil') → tab[40], type:integer, lev:1
+    └── CompoundStatement
+        └── StatementList
+            ├── Assign → type:integer
+            │   ├── Var('x') → tab[39], type:integer, lev:1
+            │   └── IntLit('15') → type:integer
+            ├── If
+            │   ├── BinOp op=eql → type:boolean
+            │   │   ├── BinOp op=imod → type:integer
+            │   │   │   ├── Var('x') → tab[39], type:integer, lev:1
+            │   │   │   └── IntLit('2') → type:integer
+            │   │   └── IntLit('0') → type:integer
+            │   ├── Assign → type:integer
+            │   │   ├── Var('hasil') → tab[40], type:integer, lev:1
+            │   │   └── IntLit('1') → type:integer
+            │   └── Assign → type:integer
+            │       ├── Var('hasil') → tab[40], type:integer, lev:1
+            │       └── IntLit('0') → type:integer
+            └── ProcCall('writeln') → tab[34]
+                └── Var('hasil') → tab[40], type:integer, lev:1
+
+
+--- Symbol Table (tab) ---
+idx  identifier          obj         type    ref   nrm   lev   adr     link    
+-------------------------------------------------------------------------------
+38   cekganjilgenap      program     none    0     1     0     0       37      
+39   x                   variable    integer 0     1     1     0       0       
+40   hasil               variable    integer 0     1     1     1       39      
+
+--- Block Table (btab) ---
+idx   last    lpar    psze    vsze    
+----------------------------------------
+0     38      0       0       0       
+1     40      0       0       2       
+
+--- Array Table (atab) ---
+(kosong)

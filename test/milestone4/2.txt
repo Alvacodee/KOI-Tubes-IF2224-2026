@@ -1,0 +1,10 @@
+program CekGanjilGenap;
+var x, hasil: integer;
+begin
+  x := 15;
+  if (x mod 2) == 0 then
+    hasil := 1
+  else
+    hasil := 0;
+  writeln(hasil);
+end.

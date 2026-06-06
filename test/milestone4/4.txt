@@ -1,0 +1,15 @@
+program CekRange;
+var x, hasil: integer;
+begin
+  x := 12;
+  if x > 10 then
+  begin
+    if x < 15 then
+      hasil := 1
+    else
+      hasil := 2;
+  end
+  else
+    hasil := 0;
+  writeln(hasil);
+end.

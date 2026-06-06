@@ -1,0 +1,66 @@
+--- Decorated AST ---
+ProgramNode('TabelPerkalian')
+└── Block → tab[1], lev:1
+    ├── Declarations
+    │   └── VarDecl
+    │       ├── VarDecl('i') → tab[39], type:integer, lev:1
+    │       ├── VarDecl('j') → tab[40], type:integer, lev:1
+    │       └── VarDecl('total') → tab[41], type:integer, lev:1
+    └── CompoundStatement
+        └── StatementList
+            ├── Assign → type:integer
+            │   ├── Var('total') → tab[41], type:integer, lev:1
+            │   └── IntLit('0') → type:integer
+            ├── Assign → type:integer
+            │   ├── Var('i') → tab[39], type:integer, lev:1
+            │   └── IntLit('2') → type:integer
+            ├── While
+            │   ├── BinOp op=gtr → type:boolean
+            │   │   ├── Var('i') → tab[39], type:integer, lev:1
+            │   │   └── IntLit('0') → type:integer
+            │   └── CompoundStatement
+            │       └── StatementList
+            │           ├── Assign → type:integer
+            │           │   ├── Var('j') → tab[40], type:integer, lev:1
+            │           │   └── IntLit('2') → type:integer
+            │           ├── While
+            │           │   ├── BinOp op=gtr → type:boolean
+            │           │   │   ├── Var('j') → tab[40], type:integer, lev:1
+            │           │   │   └── IntLit('0') → type:integer
+            │           │   └── CompoundStatement
+            │           │       └── StatementList
+            │           │           ├── Assign → type:integer
+            │           │           │   ├── Var('total') → tab[41], type:integer, lev:1
+            │           │           │   └── BinOp op=plus → type:integer
+            │           │           │       ├── Var('total') → tab[41], type:integer, lev:1
+            │           │           │       └── IntLit('1') → type:integer
+            │           │           └── Assign → type:integer
+            │           │               ├── Var('j') → tab[40], type:integer, lev:1
+            │           │               └── BinOp op=minus → type:integer
+            │           │                   ├── Var('j') → tab[40], type:integer, lev:1
+            │           │                   └── IntLit('1') → type:integer
+            │           └── Assign → type:integer
+            │               ├── Var('i') → tab[39], type:integer, lev:1
+            │               └── BinOp op=minus → type:integer
+            │                   ├── Var('i') → tab[39], type:integer, lev:1
+            │                   └── IntLit('1') → type:integer
+            └── ProcCall('writeln') → tab[34]
+                └── Var('total') → tab[41], type:integer, lev:1
+
+
+--- Symbol Table (tab) ---
+idx  identifier          obj         type    ref   nrm   lev   adr     link    
+-------------------------------------------------------------------------------
+38   tabelperkalian      program     none    0     1     0     0       37      
+39   i                   variable    integer 0     1     1     0       0       
+40   j                   variable    integer 0     1     1     1       39      
+41   total               variable    integer 0     1     1     2       40      
+
+--- Block Table (btab) ---
+idx   last    lpar    psze    vsze    
+----------------------------------------
+0     38      0       0       0       
+1     41      0       0       3       
+
+--- Array Table (atab) ---
+(kosong)

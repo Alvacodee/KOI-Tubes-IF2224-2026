@@ -1,0 +1,12 @@
+program HitungDeret;
+var n, total: integer;
+begin
+  n := 4;
+  total := 0;
+  while n > 0 do
+  begin
+    total := total + n;
+    n := n - 1;
+  end;
+  writeln(total);
+end.

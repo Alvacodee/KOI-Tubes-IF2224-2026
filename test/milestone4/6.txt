@@ -1,0 +1,6 @@
+program PrioritasKurung;
+var hasil: integer;
+begin
+  hasil := (100 - 20) div (5 + 3);
+  writeln(hasil);
+end.

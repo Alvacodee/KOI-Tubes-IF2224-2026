@@ -1,0 +1,109 @@
+<program>
+├── <program-header>
+│   ├── programsy(program)
+│   ├── ident(CekRange)
+│   └── semicolon(;)
+├── <block>
+│   ├── <declaration-part>
+│   │   └── <var-declaration>
+│   │       ├── varsy(var)
+│   │       ├── <identifier-list>
+│   │       │   ├── ident(x)
+│   │       │   ├── comma(,)
+│   │       │   └── ident(hasil)
+│   │       ├── colon(:)
+│   │       ├── <type>
+│   │       │   └── ident(integer)
+│   │       └── semicolon(;)
+│   └── <compound-statement>
+│       ├── beginsy(begin)
+│       ├── <statement-list>
+│       │   ├── <assignment-statement>
+│       │   │   ├── <variable>
+│       │   │   │   └── ident(x)
+│       │   │   ├── becomes(:=)
+│       │   │   └── <expression>
+│       │   │       └── <simple-expression>
+│       │   │           └── <term>
+│       │   │               └── <factor>
+│       │   │                   └── intcon(12)
+│       │   ├── semicolon(;)
+│       │   ├── <if-statement>
+│       │   │   ├── ifsy(if)
+│       │   │   ├── <expression>
+│       │   │   │   ├── <simple-expression>
+│       │   │   │   │   └── <term>
+│       │   │   │   │       └── <factor>
+│       │   │   │   │           └── <variable>
+│       │   │   │   │               └── ident(x)
+│       │   │   │   ├── <relational-operator>
+│       │   │   │   │   └── gtr(>)
+│       │   │   │   └── <simple-expression>
+│       │   │   │       └── <term>
+│       │   │   │           └── <factor>
+│       │   │   │               └── intcon(10)
+│       │   │   ├── thensy(then)
+│       │   │   ├── <compound-statement>
+│       │   │   │   ├── beginsy(begin)
+│       │   │   │   ├── <statement-list>
+│       │   │   │   │   ├── <if-statement>
+│       │   │   │   │   │   ├── ifsy(if)
+│       │   │   │   │   │   ├── <expression>
+│       │   │   │   │   │   │   ├── <simple-expression>
+│       │   │   │   │   │   │   │   └── <term>
+│       │   │   │   │   │   │   │       └── <factor>
+│       │   │   │   │   │   │   │           └── <variable>
+│       │   │   │   │   │   │   │               └── ident(x)
+│       │   │   │   │   │   │   ├── <relational-operator>
+│       │   │   │   │   │   │   │   └── lss(<)
+│       │   │   │   │   │   │   └── <simple-expression>
+│       │   │   │   │   │   │       └── <term>
+│       │   │   │   │   │   │           └── <factor>
+│       │   │   │   │   │   │               └── intcon(15)
+│       │   │   │   │   │   ├── thensy(then)
+│       │   │   │   │   │   ├── <assignment-statement>
+│       │   │   │   │   │   │   ├── <variable>
+│       │   │   │   │   │   │   │   └── ident(hasil)
+│       │   │   │   │   │   │   ├── becomes(:=)
+│       │   │   │   │   │   │   └── <expression>
+│       │   │   │   │   │   │       └── <simple-expression>
+│       │   │   │   │   │   │           └── <term>
+│       │   │   │   │   │   │               └── <factor>
+│       │   │   │   │   │   │                   └── intcon(1)
+│       │   │   │   │   │   ├── elsesy(else)
+│       │   │   │   │   │   └── <assignment-statement>
+│       │   │   │   │   │       ├── <variable>
+│       │   │   │   │   │       │   └── ident(hasil)
+│       │   │   │   │   │       ├── becomes(:=)
+│       │   │   │   │   │       └── <expression>
+│       │   │   │   │   │           └── <simple-expression>
+│       │   │   │   │   │               └── <term>
+│       │   │   │   │   │                   └── <factor>
+│       │   │   │   │   │                       └── intcon(2)
+│       │   │   │   │   └── semicolon(;)
+│       │   │   │   └── endsy(end)
+│       │   │   ├── elsesy(else)
+│       │   │   └── <assignment-statement>
+│       │   │       ├── <variable>
+│       │   │       │   └── ident(hasil)
+│       │   │       ├── becomes(:=)
+│       │   │       └── <expression>
+│       │   │           └── <simple-expression>
+│       │   │               └── <term>
+│       │   │                   └── <factor>
+│       │   │                       └── intcon(0)
+│       │   ├── semicolon(;)
+│       │   ├── <procedure/function-call>
+│       │   │   ├── ident(writeln)
+│       │   │   ├── lparent(()
+│       │   │   ├── <parameter-list>
+│       │   │   │   └── <expression>
+│       │   │   │       └── <simple-expression>
+│       │   │   │           └── <term>
+│       │   │   │               └── <factor>
+│       │   │   │                   └── <variable>
+│       │   │   │                       └── ident(hasil)
+│       │   │   └── rparent())
+│       │   └── semicolon(;)
+│       └── endsy(end)
+└── period(.)

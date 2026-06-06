@@ -1,0 +1,35 @@
+--- Decorated AST ---
+ProgramNode('PrioritasKurung')
+└── Block → tab[1], lev:1
+    ├── Declarations
+    │   └── VarDecl
+    │       └── VarDecl('hasil') → tab[39], type:integer, lev:1
+    └── CompoundStatement
+        └── StatementList
+            ├── Assign → type:integer
+            │   ├── Var('hasil') → tab[39], type:integer, lev:1
+            │   └── BinOp op=idiv → type:integer
+            │       ├── BinOp op=minus → type:integer
+            │       │   ├── IntLit('100') → type:integer
+            │       │   └── IntLit('20') → type:integer
+            │       └── BinOp op=plus → type:integer
+            │           ├── IntLit('5') → type:integer
+            │           └── IntLit('3') → type:integer
+            └── ProcCall('writeln') → tab[34]
+                └── Var('hasil') → tab[39], type:integer, lev:1
+
+
+--- Symbol Table (tab) ---
+idx  identifier          obj         type    ref   nrm   lev   adr     link    
+-------------------------------------------------------------------------------
+38   prioritaskurung     program     none    0     1     0     0       37      
+39   hasil               variable    integer 0     1     1     0       0       
+
+--- Block Table (btab) ---
+idx   last    lpar    psze    vsze    
+----------------------------------------
+0     38      0       0       0       
+1     39      0       0       1       
+
+--- Array Table (atab) ---
+(kosong)

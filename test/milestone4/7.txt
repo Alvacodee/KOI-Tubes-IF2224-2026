@@ -1,0 +1,16 @@
+program CekNegatif;
+var x, hasil: integer;
+begin
+  x := 5;
+  x := -x;
+  if x <= 0 then
+  begin
+    if x != 0 then
+      hasil := 100
+    else
+      hasil := 200;
+  end
+  else
+    hasil := 300;
+  writeln(hasil);
+end.
