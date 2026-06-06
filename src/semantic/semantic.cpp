@@ -217,6 +217,9 @@ ASTNode* SemanticAnalyzer::visitForStatement(ParseTreeNode* n) {
     ASTNode* ast = makeAST(AST_FOR);
 
     for (auto* c : n->children) {
+        if (isTok(c, "tosy")) ast->op = "to";
+        else if (isTok(c, "downtosy")) ast->op = "downto";
+
         if (isTok(c, "becomes") || isTok(c, "tosy") ||
             isTok(c, "downtosy") || isTok(c, "dosy") || isTok(c, "semicolon")) continue;
 

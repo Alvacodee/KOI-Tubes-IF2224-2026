@@ -87,6 +87,7 @@ public:
     void genWhile(ASTNode* node);
     void genFor(ASTNode* node);
     void genRepeat(ASTNode* node);
+    void genCase(ASTNode* node);
 
     int emit(OpcodeType op, int lvl, int arg);
 

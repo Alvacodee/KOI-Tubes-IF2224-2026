@@ -7,7 +7,8 @@
 #include "parser.hpp"
 #include "semantic.hpp"
 #include "parse_tree_reader.hpp"
-
+#include "intermediate_code.hpp"
+#include "interpreter.hpp"
 using namespace std;
 
 void printDecoratedAST(ostream& out, const ASTNode* ast) {
@@ -60,6 +61,28 @@ void runSemanticAndPrint(ParseTreeNode* parseTree, const string& outSemantic) {
         sem.printResults(semFile);
         semFile.close();
         cout << "Output: " << outSemantic << endl;
+    }
+
+    if (ast && sem.errors.empty()) {
+        cout << "\n--- Intermediate Code Generation ---" << endl;
+        IntermediateCodeGenerator icg(sem.symtab);
+        icg.generate(ast);
+        icg.print(cout);
+
+        string base = outSemantic;
+        size_t pos = base.find("_semantic.txt");
+        if (pos != string::npos) base = base.substr(0, pos);
+        string outICG = base + "_icg.txt";
+        icg.printToFile(outICG);
+        cout << "Output ICG: " << outICG << endl;
+
+        cout << "\n--- Execution (Interpreter) ---" << endl;
+        Interpreter interp(icg.code);
+        try {
+            interp.run();
+        } catch (const exception& e) {
+            cerr << "Runtime Error: " << e.what() << endl;
+        }
     }
 
     delete ast;

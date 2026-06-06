@@ -277,6 +277,9 @@ void IntermediateCodeGenerator::genStmt(ASTNode* node) {
         case AST_REPEAT:
             genRepeat(node);  
             break;
+        case AST_CASE:
+            genCase(node);
+            break;
         case AST_EMPTY:
             break;
         default:
@@ -285,41 +288,154 @@ void IntermediateCodeGenerator::genStmt(ASTNode* node) {
 }
 
 void IntermediateCodeGenerator::genIf(ASTNode* node) {
-
-    (void)node;
+    if (!node || node->children.empty()) return;
+    genExpr(node->children[0]);
+    int jpcIdx = emit(OP_JPC, 0, 0);
+    
+    if (node->children.size() > 1) {
+        genStmt(node->children[1]);
+    }
+    
+    if (node->children.size() > 2) {
+        int jmpIdx = emit(OP_JMP, 0, 0);
+        backpatch(jpcIdx, nextAddr());
+        genStmt(node->children[2]);
+        backpatch(jmpIdx, nextAddr());
+    } else {
+        backpatch(jpcIdx, nextAddr());
+    }
 }
 
 void IntermediateCodeGenerator::genWhile(ASTNode* node) {
-
-    (void)node;
+    if (!node || node->children.empty()) return;
+    int startAddr = nextAddr();
+    genExpr(node->children[0]);
+    int jpcIdx = emit(OP_JPC, 0, 0);
+    
+    if (node->children.size() > 1) {
+        genStmt(node->children[1]);
+    }
+    emit(OP_JMP, 0, startAddr);
+    backpatch(jpcIdx, nextAddr());
 }
 
 void IntermediateCodeGenerator::genFor(ASTNode* node) {
+    if (!node || node->children.size() < 4) return;
+    
+    ASTNode* counterVar = node->children[0];
+    ASTNode* initExpr = node->children[1];
+    ASTNode* finalExpr = node->children[2];
+    ASTNode* body = node->children[3];
+    bool isDownTo = (node->op == "downto");
 
-    (void)node;
+    genExpr(initExpr);
+    int diff = currentLevel - counterVar->level;
+    int offs = varOffset(counterVar->tabIndex);
+    emit(OP_STO, diff, offs);
+    
+    int startAddr = nextAddr();
+    
+    emit(OP_LOD, diff, offs);
+    genExpr(finalExpr);
+    if (isDownTo) {
+        emit(OP_OPR, 0, OPR_GEQ);
+    } else {
+        emit(OP_OPR, 0, OPR_LEQ);
+    }
+    
+    int jpcIdx = emit(OP_JPC, 0, 0);
+    
+    genStmt(body);
+    
+    emit(OP_LOD, diff, offs);
+    emit(OP_LIT, 0, 1);
+    if (isDownTo) {
+        emit(OP_OPR, 0, OPR_SUB);
+    } else {
+        emit(OP_OPR, 0, OPR_ADD);
+    }
+    emit(OP_STO, diff, offs);
+    
+    emit(OP_JMP, 0, startAddr);
+    backpatch(jpcIdx, nextAddr());
 }
 
 void IntermediateCodeGenerator::genRepeat(ASTNode* node) {
+    if (!node || node->children.size() < 2) return;
+    int startAddr = nextAddr();
+    genStmt(node->children[0]);
+    genExpr(node->children[1]);
+    emit(OP_JPC, 0, startAddr);
+}
 
-    (void)node;
+void IntermediateCodeGenerator::genCase(ASTNode* node) {
+    if (!node || node->children.size() < 2) return;
+    ASTNode* exprNode = node->children[0];
+    ASTNode* cbNode = node->children[1];
+    
+    std::vector<int> endJmps;
+    std::vector<ASTNode*> currentConsts;
+    
+    for (auto* child : cbNode->children) {
+        if (child->kind == AST_INT_LIT || child->kind == AST_CHAR_LIT) {
+            currentConsts.push_back(child);
+        } else {
+            std::vector<int> stmtJmps;
+            int nextCheckIdx = -1;
+            
+            for (size_t i = 0; i < currentConsts.size(); i++) {
+                if (nextCheckIdx != -1) {
+                    backpatch(nextCheckIdx, nextAddr());
+                }
+                genExpr(exprNode);
+                genExpr(currentConsts[i]);
+                emit(OP_OPR, 0, OPR_EQL);
+                
+                if (i == currentConsts.size() - 1) {
+                    nextCheckIdx = emit(OP_JPC, 0, 0);
+                } else {
+                    int jpcToNextCheck = emit(OP_JPC, 0, 0);
+                    stmtJmps.push_back(emit(OP_JMP, 0, 0));
+                    backpatch(jpcToNextCheck, nextAddr());
+                }
+            }
+            
+            for (int jmp : stmtJmps) {
+                backpatch(jmp, nextAddr());
+            }
+            
+            genStmt(child);
+            endJmps.push_back(emit(OP_JMP, 0, 0));
+            
+            if (nextCheckIdx != -1) {
+                backpatch(nextCheckIdx, nextAddr());
+            }
+            
+            currentConsts.clear();
+        }
+    }
+    
+    for (int jmp : endJmps) {
+        backpatch(jmp, nextAddr());
+    }
 }
 
 int IntermediateCodeGenerator::mapOpToOpr(const std::string& op) const {
-    if (op == "+")      return OPR_ADD;
-    if (op == "-")      return OPR_SUB;
-    if (op == "*")      return OPR_MUL;
-    if (op == "/")      return OPR_DIV;
-    if (op == "div")    return OPR_DIV;
-    if (op == "mod")    return OPR_MOD;
-    if (op == "and")    return OPR_AND;
-    if (op == "or")     return OPR_OR;
-    if (op == "not")    return OPR_NOT;
-    if (op == "=")      return OPR_EQL;
-    if (op == "<>")     return OPR_NEQ;
-    if (op == "<")      return OPR_LSS;
-    if (op == "<=")     return OPR_LEQ;
-    if (op == ">")      return OPR_GTR;
-    if (op == ">=")     return OPR_GEQ;
+    if (op == "plus" || op == "+")      return OPR_ADD;
+    if (op == "minus" || op == "-")     return OPR_SUB;
+    if (op == "times" || op == "*")     return OPR_MUL;
+    if (op == "rdiv" || op == "/")      return OPR_DIV;
+    if (op == "idiv" || op == "div")    return OPR_DIV;
+    if (op == "imod" || op == "mod")    return OPR_MOD;
+    if (op == "andsy" || op == "and")   return OPR_AND;
+    if (op == "orsy" || op == "or")     return OPR_OR;
+    if (op == "notsy" || op == "not")   return OPR_NOT;
+    if (op == "eql" || op == "=")       return OPR_EQL;
+    if (op == "neq" || op == "<>")      return OPR_NEQ;
+    if (op == "lss" || op == "<")       return OPR_LSS;
+    if (op == "leq" || op == "<=")      return OPR_LEQ;
+    if (op == "gtr" || op == ">")       return OPR_GTR;
+    if (op == "geq" || op == ">=")      return OPR_GEQ;
     return 0;
 }
 
