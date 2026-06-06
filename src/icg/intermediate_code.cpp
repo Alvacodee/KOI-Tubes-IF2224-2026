@@ -198,8 +198,7 @@ void IntermediateCodeGenerator::genAssign(ASTNode* node) {
         emit(OP_STO, diff, offs);
     }
     else if (lhs->kind == AST_ARRAY_ACCESS) {
-        // Array assignment: perlu perhitungan alamat, lewati sementara
-        // (bisa diimplementasikan nanti jika diperlukan)
+
     }
 }
 
@@ -218,7 +217,6 @@ void IntermediateCodeGenerator::genProcCall(ASTNode* node) {
     else {
         int tabIdx = node->tabIndex;
         if (tabIdx >= 0) {
-            int btabIdx = symtab.tab[tabIdx].ref; 
             int diff = currentLevel - symtab.tab[tabIdx].lev;
             
             for (auto* param : node->children) {
@@ -229,7 +227,7 @@ void IntermediateCodeGenerator::genProcCall(ASTNode* node) {
             int targetAddr = (it != procAddrs.end()) ? it->second : 0;
             emit(OP_CAL, diff, targetAddr);
         } else {
-            // fallback: tidak dikenal
+
         }
     }
 }
@@ -306,8 +304,6 @@ void IntermediateCodeGenerator::genRepeat(ASTNode* node) {
     (void)node;
 }
 
-//Fungi helper
-// ========== Helper untuk mapping operator ke kode OPR ==========
 int IntermediateCodeGenerator::mapOpToOpr(const std::string& op) const {
     if (op == "+")      return OPR_ADD;
     if (op == "-")      return OPR_SUB;
@@ -324,7 +320,7 @@ int IntermediateCodeGenerator::mapOpToOpr(const std::string& op) const {
     if (op == "<=")     return OPR_LEQ;
     if (op == ">")      return OPR_GTR;
     if (op == ">=")     return OPR_GEQ;
-    return 0;  // fallback
+    return 0;
 }
 
 int IntermediateCodeGenerator::varOffset(int tabIdx) const {
