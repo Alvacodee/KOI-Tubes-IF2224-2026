@@ -137,6 +137,8 @@ Token Lexer::getNextToken() {
             opBuf += currentChar; readNextChar();
         } else if (first == '>' && currentChar == '=') {
             opBuf += currentChar; readNextChar();
+        } else if (first == '!' && currentChar == '=') {
+            opBuf += currentChar; readNextChar();
         }
 
         return Token(classifyOperator(opBuf), opBuf, currentLine);

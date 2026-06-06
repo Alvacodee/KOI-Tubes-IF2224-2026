@@ -4,7 +4,7 @@ bool isOperatorChar(char c){
     if (c == '+' || c == '-' || c == '*' || c == '/' ||
         c == '=' || c == '>' || c == '<' || c == ':' ||
         c == ';' || c == ',' || c == '.' || c == '(' ||
-        c == ')' || c == '[' || c == ']'){
+        c == ')' || c == '[' || c == ']' || c == '!'){
         return true;
     } else {
         return false;
@@ -18,7 +18,7 @@ TokenType classifyOperator(const std::string& op){
     if (op == "/") return TokenType::RDIV;
 
     if (op == "==" || op == "=") return TokenType::EQL;
-    if (op == "<>") return TokenType::NEQ;
+    if (op == "<>" || op == "!=") return TokenType::NEQ;
     if (op == ">") return TokenType::GTR;
     if (op == ">=") return TokenType::GEQ;
     if (op == "<") return TokenType::LSS;

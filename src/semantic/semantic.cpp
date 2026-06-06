@@ -383,7 +383,17 @@ ASTNode* SemanticAnalyzer::visitSimpleExpression(ParseTreeNode* n) {
         }
         if (isNT(c, "<term>")) {
             ASTNode* t = visitTerm(c);
-            if (!left) { left = t; }
+            if (!left) { 
+                if (curOp == "minus" || curOp == "plus") {
+                    ASTNode* unop = makeAST(AST_UNOP);
+                    unop->op = curOp == "minus" ? "-" : "+";
+                    unop->add(t);
+                    unop->typeCode = t->typeCode;
+                    left = unop;
+                } else {
+                    left = t; 
+                }
+            }
             else {
                 ast->op = curOp;
                 ast->add(left);
