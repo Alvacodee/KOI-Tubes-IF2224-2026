@@ -164,9 +164,10 @@ ASTNode* SemanticAnalyzer::visitProcedureDeclaration(ParseTreeNode* n) {
     }
     symtab.btab[symtab.curBlock].lpar = lastParam;
     symtab.btab[symtab.curBlock].psze = psze;
+    symtab.btab[symtab.curBlock].vsze = psze;
 
     for (auto* c : n->children) {
-        if (isNT(c, "<block>")) ast->add(visitBlock(c));
+        if (isNT(c, "<block>")) ast->add(visitBlock(c, false));
     }
 
     symtab.closeBlock();
@@ -214,9 +215,10 @@ ASTNode* SemanticAnalyzer::visitFunctionDeclaration(ParseTreeNode* n) {
     }
     symtab.btab[symtab.curBlock].lpar = lastParam;
     symtab.btab[symtab.curBlock].psze = psze;
+    symtab.btab[symtab.curBlock].vsze = psze;
 
     for (auto* c : n->children) {
-        if (isNT(c, "<block>")) ast->add(visitBlock(c));
+        if (isNT(c, "<block>")) ast->add(visitBlock(c, false));
     }
 
     symtab.closeBlock();

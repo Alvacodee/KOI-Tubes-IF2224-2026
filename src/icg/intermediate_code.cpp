@@ -71,6 +71,7 @@ void IntermediateCodeGenerator::genProgram(ASTNode* node) {
 
 void IntermediateCodeGenerator::genBlock(ASTNode* node) {
     if (!node) return;
+    int savedLevel = currentLevel;
     currentLevel = node->level;
     int jmpIdx = emit(OP_JMP, 0, 0);
     
@@ -85,6 +86,7 @@ void IntermediateCodeGenerator::genBlock(ASTNode* node) {
             genCompound(c);
         }
     }
+    currentLevel = savedLevel;
 }
 
 void IntermediateCodeGenerator::genDeclPart(ASTNode* node) {
@@ -274,6 +276,7 @@ void IntermediateCodeGenerator::genAssign(ASTNode* node) {
             emit(OP_STI, 0, 0);
         }
     }
+}
 
 void IntermediateCodeGenerator::genProcCall(ASTNode* node) {
     if (!node) return;

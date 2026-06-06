@@ -64,10 +64,10 @@ ASTNode* SemanticAnalyzer::visitProgram(ParseTreeNode* n) {
     return ast;
 }
 
-ASTNode* SemanticAnalyzer::visitBlock(ParseTreeNode* n) {
+ASTNode* SemanticAnalyzer::visitBlock(ParseTreeNode* n, bool doOpen) {
     ASTNode* ast = makeAST(AST_BLOCK);
 
-    int bIdx = symtab.openBlock();
+    int bIdx = doOpen ? symtab.openBlock() : symtab.curBlock;
     ast->tabIndex = bIdx;
     ast->level = symtab.curLevel;
 
@@ -81,7 +81,7 @@ ASTNode* SemanticAnalyzer::visitBlock(ParseTreeNode* n) {
         }
     }
 
-    symtab.closeBlock();
+    if (doOpen) symtab.closeBlock();
     return ast;
 }
 
@@ -230,6 +230,7 @@ ASTNode* SemanticAnalyzer::visitForStatement(ParseTreeNode* n) {
 
             if (idx >= 0) {
                 v->tabIndex = idx;
+                v->level = symtab.tab[idx].lev;
                 v->typeCode = symtab.tab[idx].type;
                 if (symtab.tab[idx].type != T_INTEGER) {
                     addError("FOR counter variable must be Integer: " + varName);
@@ -313,7 +314,10 @@ ASTNode* SemanticAnalyzer::visitProcCall(ParseTreeNode* n) {
         if (isTok(c, "ident")) {
             ast->value = tokVal(c);
             int idx = symtab.lookup(tokVal(c));
-            if (idx >= 0) ast->tabIndex = idx;
+            if (idx >= 0) {
+                ast->tabIndex = idx;
+                ast->typeCode = symtab.tab[idx].type;
+            }
         } else if (isNT(c, "<parameter-list>")) {
             for (auto* p : c->children) {
                 if (isTok(p, "comma")) continue;
@@ -566,7 +570,11 @@ ASTNode* SemanticAnalyzer::visitVariable(ParseTreeNode* n) {
                 } else if (isTok(targetIdxTok, "ident")) {
                     indexAst = makeAST(AST_VAR, tokVal(targetIdxTok));
                     int iRef = symtab.lookup(tokVal(targetIdxTok));
-                    if (iRef >= 0) indexAst->typeCode = symtab.tab[iRef].type;
+                    if (iRef >= 0) {
+                        indexAst->tabIndex = iRef;
+                        indexAst->level = symtab.tab[iRef].lev;
+                        indexAst->typeCode = symtab.tab[iRef].type;
+                    }
                 }
 
                 if (indexAst) {
@@ -595,6 +603,7 @@ ASTNode* SemanticAnalyzer::visitVariable(ParseTreeNode* n) {
         int idx = symtab.lookup(ast->value);
         if (idx >= 0) {
             ast->tabIndex = idx;
+            ast->level = symtab.tab[idx].lev;
             ast->typeCode = symtab.tab[idx].type;
         } else {
             addError("Variabel tidak dideklarasikan: " + ast->value);

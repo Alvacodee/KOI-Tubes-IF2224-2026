@@ -23,7 +23,7 @@ public:
     ASTNode* analyze(ParseTreeNode* parseTree);
 
     ASTNode* visitProgram(ParseTreeNode* n);
-    ASTNode* visitBlock(ParseTreeNode* n);
+    ASTNode* visitBlock(ParseTreeNode* n, bool doOpen = true);
     ASTNode* visitDeclarationPart(ParseTreeNode* n);
 
     ASTNode* visitConstDeclaration(ParseTreeNode* n);
