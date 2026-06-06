@@ -46,6 +46,9 @@ bool Interpreter::execute(const Instruction& instr) {
         case OP_LIT: execLIT(instr.arg); return true;
         case OP_LOD: execLOD(instr.lvl, instr.arg); return true;
         case OP_STO: execSTO(instr.lvl, instr.arg); return true;
+        case OP_LDA: execLDA(instr.lvl, instr.arg); return true;
+        case OP_LDI: execLDI(); return true;
+        case OP_STI: execSTI(); return true;
         case OP_OPR: execOPR(instr.arg); return true;
         case OP_JMP: execJMP(instr.arg); return true;
         case OP_JPC: execJPC(instr.arg); return true;
@@ -114,6 +117,22 @@ void Interpreter::execSTO(int level, int a) {
     StackVal val = pop();
     int frame_base = find_base(level);
     store(frame_base + a, val);
+}
+
+void Interpreter::execLDA(int level, int a) {
+    int frame_base = find_base(level);
+    push(frame_base + a);
+}
+
+void Interpreter::execLDI() {
+    StackVal addr = pop();
+    push(load(addr));
+}
+
+void Interpreter::execSTI() {
+    StackVal val = pop();
+    StackVal addr = pop();
+    store(addr, val);
 }
 
 void Interpreter::execOPR(int o) {

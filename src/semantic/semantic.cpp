@@ -525,6 +525,7 @@ ASTNode* SemanticAnalyzer::visitVariable(ParseTreeNode* n) {
 
             if (idx >= 0) {
                 ast->tabIndex = idx;
+                ast->level = symtab.tab[idx].lev;
                 int typeCode = symtab.tab[idx].type;
                 int atabRef = symtab.tab[idx].ref;
 

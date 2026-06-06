@@ -17,6 +17,9 @@ enum OpcodeType {
     OP_JPC,
     OP_CAL,
     OP_RET,
+    OP_LDA,
+    OP_LDI,
+    OP_STI,
 };
 
 enum OprType {

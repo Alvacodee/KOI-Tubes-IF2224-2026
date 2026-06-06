@@ -71,6 +71,9 @@ private:
     void execLIT(int v);
     void execLOD(int level, int a);
     void execSTO(int level, int a);
+    void execLDA(int level, int a);
+    void execLDI();
+    void execSTI();
     void execOPR(int o);
     void execJMP(int l);
     void execJPC(int l);

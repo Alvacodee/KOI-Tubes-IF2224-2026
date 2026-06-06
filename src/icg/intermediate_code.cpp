@@ -13,6 +13,9 @@ std::string Instruction::opName() const {
         case OP_JPC: return "JPC";
         case OP_CAL: return "CAL";
         case OP_RET: return "RET";
+        case OP_LDA: return "LDA";
+        case OP_LDI: return "LDI";
+        case OP_STI: return "STI";
         default:     return "???";
     }
 }
@@ -97,6 +100,13 @@ void IntermediateCodeGenerator::genProcDecl(ASTNode* node) {
     procAddrs[node->tabIndex] = nextAddr();
     int btabIdx = symtab.tab[node->tabIndex].ref;
     emit(OP_INT, 0, frameSize(btabIdx));
+    
+    int psze = symtab.btab[btabIdx].psze;
+    for (int i = 0; i < psze; i++) {
+        emit(OP_LOD, 0, -psze + i);
+        emit(OP_STO, 0, 3 + i);
+    }
+    
     for (auto* c : node->children) {
         if (c->kind == AST_BLOCK) {
             genBlock(c);
@@ -110,6 +120,13 @@ void IntermediateCodeGenerator::genFuncDecl(ASTNode* node) {
     procAddrs[node->tabIndex] = nextAddr();
     int btabIdx = symtab.tab[node->tabIndex].ref;
     emit(OP_INT, 0, frameSize(btabIdx));
+    
+    int psze = symtab.btab[btabIdx].psze;
+    for (int i = 0; i < psze; i++) {
+        emit(OP_LOD, 0, -psze + i);
+        emit(OP_STO, 0, 3 + i);
+    }
+    
     for (auto* c : node->children) {
         if (c->kind == AST_BLOCK) {
             genBlock(c);
@@ -165,11 +182,31 @@ void IntermediateCodeGenerator::genExpr(ASTNode* node) {
             break;
         }
         case AST_ARRAY_ACCESS: {
-            if (!node->children.empty() && node->children[0]->kind == AST_VAR) {
-                ASTNode* varNode = node->children[0];
-                int diff = currentLevel - varNode->level;
-                int offs = varOffset(varNode->tabIndex);
-                emit(OP_LOD, diff, offs);
+            if (node->children.size() >= 1) {
+                int diff = currentLevel - node->level;
+                int offs = varOffset(node->tabIndex);
+
+                int atabRef = symtab.tab[node->tabIndex].ref;
+                int arrRef = atabRef - 1;
+                if (arrRef < 0) arrRef = 0; // fallback
+                int low = 0;
+                int elsz = 1;
+                if (arrRef < (int)symtab.atab.size()) {
+                    low = symtab.atab[arrRef].low;
+                    elsz = symtab.atab[arrRef].elsz;
+                }
+
+                emit(OP_LDA, diff, offs);
+
+                genExpr(node->children[0]);
+
+                emit(OP_LIT, 0, low);
+                emit(OP_OPR, 0, OPR_SUB);
+                emit(OP_LIT, 0, elsz);
+                emit(OP_OPR, 0, OPR_MUL);
+                emit(OP_OPR, 0, OPR_ADD);
+
+                emit(OP_LDI, 0, 0);
             } else {
                 emit(OP_LIT, 0, 0);
             }
@@ -190,17 +227,53 @@ void IntermediateCodeGenerator::genAssign(ASTNode* node) {
     
     ASTNode* lhs = node->children[0];
     ASTNode* rhs = node->children[1];
-    
-    genExpr(rhs);
+
     if (lhs->kind == AST_VAR) {
-        int diff = currentLevel - lhs->level;
-        int offs = varOffset(lhs->tabIndex);
-        emit(OP_STO, diff, offs);
+        int tabIdx = lhs->tabIndex;
+        if (tabIdx >= 0 && symtab.tab[tabIdx].obj == OBJ_FUNC) {
+            genExpr(rhs);
+            int btabIdx = symtab.tab[tabIdx].ref;
+            int psze = symtab.btab[btabIdx].psze;
+            int diff = currentLevel - (symtab.tab[tabIdx].lev + 1);
+            int offs = -psze - 1;
+            emit(OP_STO, diff, offs);
+        } else {
+            genExpr(rhs);
+            int diff = currentLevel - lhs->level;
+            int offs = varOffset(lhs->tabIndex);
+            emit(OP_STO, diff, offs);
+        }
     }
     else if (lhs->kind == AST_ARRAY_ACCESS) {
+        if (lhs->children.size() >= 1) {
+            int diff = currentLevel - lhs->level;
+            int offs = varOffset(lhs->tabIndex);
 
+            int atabRef = symtab.tab[lhs->tabIndex].ref;
+            int arrRef = atabRef - 1;
+            if (arrRef < 0) arrRef = 0; // fallback
+            int low = 0;
+            int elsz = 1;
+            if (arrRef < (int)symtab.atab.size()) {
+                low = symtab.atab[arrRef].low;
+                elsz = symtab.atab[arrRef].elsz;
+            }
+
+            emit(OP_LDA, diff, offs);
+
+            genExpr(lhs->children[0]);
+
+            emit(OP_LIT, 0, low);
+            emit(OP_OPR, 0, OPR_SUB);
+            emit(OP_LIT, 0, elsz);
+            emit(OP_OPR, 0, OPR_MUL);
+            emit(OP_OPR, 0, OPR_ADD);
+
+            genExpr(rhs);
+
+            emit(OP_STI, 0, 0);
+        }
     }
-}
 
 void IntermediateCodeGenerator::genProcCall(ASTNode* node) {
     if (!node) return;
@@ -218,6 +291,13 @@ void IntermediateCodeGenerator::genProcCall(ASTNode* node) {
         int tabIdx = node->tabIndex;
         if (tabIdx >= 0) {
             int diff = currentLevel - symtab.tab[tabIdx].lev;
+            int btabIdx = symtab.tab[tabIdx].ref;
+            int psze = symtab.btab[btabIdx].psze;
+            bool isFunc = (symtab.tab[tabIdx].obj == OBJ_FUNC);
+            
+            if (isFunc) {
+                emit(OP_INT, 0, 1);
+            }
             
             for (auto* param : node->children) {
                 genExpr(param);
@@ -226,6 +306,10 @@ void IntermediateCodeGenerator::genProcCall(ASTNode* node) {
             auto it = procAddrs.find(tabIdx);
             int targetAddr = (it != procAddrs.end()) ? it->second : 0;
             emit(OP_CAL, diff, targetAddr);
+            
+            if (psze > 0) {
+                emit(OP_INT, 0, -psze);
+            }
         } else {
 
         }
@@ -441,5 +525,5 @@ int IntermediateCodeGenerator::mapOpToOpr(const std::string& op) const {
 
 int IntermediateCodeGenerator::varOffset(int tabIdx) const {
     if (tabIdx < 0 || tabIdx >= (int)symtab.tab.size()) return 0;
-    return symtab.tab[tabIdx].adr;
+    return 3 + symtab.tab[tabIdx].adr;
 }
